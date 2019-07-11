@@ -11,8 +11,7 @@
 library(dplyr)
 library(stringr)
 library(ggplot2)
-# for displaying heart image
-library(png)
+library(png) # for displaying heart image
 library(grid)
 
 bingo_df <- read.csv("bingo.csv"
@@ -37,34 +36,18 @@ grid_df <- data.frame(
   w = 1
 )
 
-# create temp df version
-bingo_df_temp <- bingo_df
-
-ext_bingo_df <- do.call(rbind,lapply(1:8,function(x) bingo_df <- bind_rows(bingo_df_temp,bingo_df)))
-
 # Make plots.
 plot_list = list()
 
 for(i in 1:guests){
-# plot_df <- grid_df %>%
-#   mutate(gift = str_wrap(ext_bingo_df$Gift_Title[1:25],width = 14)) %>%
-#   # force 13 to be a free space, separate variable to give it unique aesthetics
-#   mutate(gift_free = ifelse(x==3 & y==3,sprintf("\u2665"),NA) 
-#          , gift = ifelse(x==3 & y==3,NA,gift))
-
 plot_df <- grid_df %>%
-  mutate(gift = str_wrap(sample(bingo_df$Gift_Title,25),width = 14)) %>%
-  # force 13 to be a free space, separate variable to give it unique aesthetics
+  mutate(gift = str_wrap(sample(bingo_df$Gift_Title,25),width = 8)) %>%
+  # force center to be a free space, separate variable to give it unique aesthetics
   mutate(gift = ifelse(x==3 & y==3,NA,gift))
   
 temp_plot <- ggplot(plot_df, aes(x, y, width = w)) +
   geom_tile(color = "black",fill=NA) +
   geom_text(aes(label=gift)) +
-  # geom_text(data = data.frame(x=3,y=3,w=1),aes(label=gift_free),size = 20) +
-  # sprintf("\u2665")
-  # geom_text(data = data.frame(x=3,y=3,w=1),aes(label="<3"),size = 20) +
-  # geom_text(data = data.frame(x=3,y=3,w=1),aes(label="♥"),size = 20) +
-  # geom_text(data = data.frame(x=3,y=3,w=1),aes(label="\u2665"),size = 20) +
   annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) +
   geom_text(data = data.frame(
     head = c("B","I","N","G","O"),x=1:5,y=6,w=1)
@@ -80,12 +63,10 @@ temp_plot <- ggplot(plot_df, aes(x, y, width = w)) +
         , plot.title = element_text(hjust = 0.5,size = 14)
         , axis.ticks = element_blank()
         , panel.border = element_rect(colour = "black", fill=NA, size=5)
+        , plot.margin=grid::unit(rep(.25,4), "in")
         )
 
 plot_list[[i]] <- temp_plot
-
-ext_bingo_df <- ext_bingo_df %>%
-  slice(-(1:25))
 
 }
 
@@ -95,15 +76,16 @@ ext_bingo_df <- ext_bingo_df %>%
 
 ggsave("bingo_one_per_page.pdf", gridExtra::marrangeGrob(grobs = plot_list, nrow=1, ncol=1,top = NULL))
 
-# # save all BINGO boards to one big pdf
-# pdf("bingo.pdf")
-# for (i in 1:3) {
-#   print(plot_list[[i]])
-# }
-# dev.off()
+ggsave("bingo_landscape_two.pdf"
+       , gridExtra::marrangeGrob(grobs = plot_list, nrow=1, ncol=2,top = NULL)
+       ,width=11, height=8.5)
+
+
 
 # SANDBOX #########################################################################
 
+bingo_df_temp <- bingo_df
+ext_bingo_df <- do.call(rbind,lapply(1:8,function(x) bingo_df <- bind_rows(bingo_df_temp,bingo_df)))
 
 test_df <- ext_bingo_df %>%
   mutate(
