@@ -38,8 +38,16 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      )
           , menuItem("Formats and Styles",icon = icon("paint-brush")
                      # create modal window and update to validate 5 letters
-                     , textInput('head_letters',"Choose five letters to be columns:",
-                                   value = "BINGO"))
+                     , textInput('head_letters',"Choose five letters to be columns:"
+                                   , value = "BINGO")
+                     , textInput('head_text_color',"Text color for column letters:"
+                                 , value = "black")
+                     , textInput('tile_text_color',"Text color for tiles:"
+                                 , value = "black")
+                     , textInput('panel_color',"Background color:"
+                                 , value = "white")
+
+                     )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"
                     , p("In May 2019, my sister-in-law mentioned she was going to play Bingo at her wedding shower.
@@ -50,6 +58,20 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
             ,br()
          # , img(src="headshot.jpg",id="face-img",align="center")
          # icon("user fa-3x")
+         # , div(
+         #   a(href="https://ncpollock.github.io/"
+         #     ,target="_blank"
+         #     , img(src="headshot.jpg",id="face-img",align="left"))
+         #   # icon("user fa-pull-right fa-3x") # generic user icon instead of my face
+         #   , strong("Developed by: "),
+         #   br(),
+         #   a(href="https://ncpollock.github.io/"
+         #     ,target="_blank"
+         #     ,"Noah C. Pollock"),br()
+         #  , a(href = "https://github.com/ncpollock/bingo"
+         #        ,target="_blank"
+         #        ,"Code on GitHub")
+         #   ,style = "float:center;padding-left:15px;white-space:nowrap;")
             , p(img(src="headshot.jpg",id="face-img",align="center"),br(),
                strong("Developed by: "),
                br(),
@@ -68,20 +90,13 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto:300italic,400,700")
         )
-    #    , tags$script('window.onload = function() {
-    #   function fixBodyHeight() {
-    #     var el = $(document.getElementsByClassName("content-wrapper")[0]);
-    #     var h = el.height();
-    #     el.css("min-height", h + 50 + "px");
-    #   };
-    #   window.addEventListener("resize", fixBodyHeight);
-    #   fixBodyHeight();
-    # };')
         , style="font-family: 'Roboto';",
         tags$head(tags$style(custom_colors))
-        , p("this is a test if I can push content without tabs?")
+        , fluidPage(style="height: 1000px;"
+        , h3("Preview Your Bingo Board!")
+        , p("Note that this preview version is likely distorted compared to the downloaded version.")
         , plotOutput("preview")
-
+        )
           #           infoBoxOutput('file_rows'),
           #           box(solidHeader = TRUE,width=12,title = "Preview Data",status = "success",
           #               dataTableOutput("full_dataset")))),

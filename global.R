@@ -39,14 +39,10 @@ grid_df <- data.frame(
   w = 1
 )
 
-# initialize list to store plots
-plot_list = list()
-
 heart <- readPNG("www/heart.png")
 g <- rasterGrob(heart, interpolate=TRUE)
 
 tiles <- 25
-guests <- 55
 
 # style column names / header for datatables
 dt_column_head <- JS(

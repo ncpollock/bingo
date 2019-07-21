@@ -84,16 +84,17 @@ shinyServer(function(input, output, clientData, session) {
       
       ggplot(plot_df, aes(x, y, width = w)) +
         geom_tile(color = "black",fill=NA) +
-        geom_text(aes(label=Tiles)) +
+        geom_text(aes(label=Tiles), color = input$tile_text_color) +
         # annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) + # adds custom image to free space
         geom_text(data = data.frame(
           head = unlist(strsplit(input$head_letters,"")),x=1:5,y=6,w=1)
           , aes(x=x,y=y,label=head)
+          , color = input$head_text_color
           , size = 14) +
         scale_y_continuous(
           limits = c(0,6.2)
         ) +
-        theme(panel.background = element_blank()
+        theme(panel.background = element_rect(fill=input$panel_color)
               , axis.text = element_blank()
               , axis.title = element_blank()
               , axis.line = element_blank()
@@ -108,6 +109,9 @@ shinyServer(function(input, output, clientData, session) {
 
     plot_list <- reactive({
       
+      # initialize list to store plots
+      plot_list = list()
+      
       for(i in 1:input$boards){
         plot_df <- grid_df %>%
           mutate(gift = str_wrap(sample(bingo_df$Gift_Title,25),width = 8)) %>%
@@ -119,7 +123,7 @@ shinyServer(function(input, output, clientData, session) {
           geom_text(aes(label=gift)) +
           annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) +
           geom_text(data = data.frame(
-            head = c("B","I","N","G","O"),x=1:5,y=6,w=1)
+            head = unlist(strsplit(input$head_letters,"")),x=1:5,y=6,w=1)
             , aes(x=x,y=y,label=head)
             , size = 14) +
           scale_y_continuous(
