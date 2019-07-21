@@ -3,18 +3,21 @@
 
 ui <- dashboardPage(
     dashboardHeader(title = "Bingo Generator",
-                    titleWidth = 450),
+                    titleWidth = sidebar_width),
     
     sidebar <- dashboardSidebar(
-      width = 450
+      width = sidebar_width
       , sidebarMenu(
           br()
-            ,HTML("<i class='fa fa-ticket' style='display:block; font-size: 50px; text-align: center;'></i>")
-            ,br()
-          , menuItem("Select Your Content",icon = icon("search")
+          , HTML("<i class='fa fa-ticket' style='display:block; font-size: 50px; text-align: center;'></i>")
+          , br()
+          , downloadButton("download_bingo","Download Bingo Sheets",style="text-align: center;background-color: blue;")
+          , br()
+          , menuItem("Select Your Content"
+                     , startExpanded = TRUE
+                     ,icon = icon("search")
                      , h3("Select Your Content.")
-                     , p("Only a true CSV file with headers will work with this tool.")
-                     , selectInput('select_test',"Choose a Dataset Instead: ",
+                     , selectInput('theme',"Choose a theme: ",
                                    c("Wedding","Star Wars","Numbers","Upload Custom List"),
                                    selected = "Wedding")
                      # show only on "Upload Custom List" selection
@@ -24,23 +27,16 @@ ui <- dashboardPage(
                                             "text/comma-separated-values,text/plain",
                                             ".csv")))
           , menuItem("Iron Out the Details",icon = icon("gear"))
-          , menuItem("Formats and Styles",icon = icon("paint-brush"))
-          
-          # could put in fluidPage() to format nicely
-            # toggle button to select or upload?
-          , h3("Select Your Content.")
-            ,p("Only a true CSV file with headers will work with this tool.")
-            ,fileInput("data_file", "Choose a CSV File",
-                      multiple = FALSE,
-                      accept = c("text/csv",
-                                 "text/comma-separated-values,text/plain",
-                                 ".csv"))
-            ,p("Don't have any data to upload?")
-            ,selectInput('select_dataset',"Choose a Dataset Instead: ",
-                        c("Upload","Post-Grad Outcomes"
-                          ,"Department of Education API"
-                          ,"iris","diamonds","PlantGrowth"),
-                        selected = "Upload")
+          , menuItem("Formats and Styles",icon = icon("paint-brush")
+                     # create modal window and update to validate 5 letters
+                     , textInput('head_letters',"Choose five letters to be columns:",
+                                   value = "BINGO"))
+          , menuItem("About"
+                     , fluidPage(width = sidebar_width, style="white-space: normal;"
+                    , p("In May 2019, my sister-in-law mentioned she was going to play Bingo at her wedding shower.
+                     As she thought about creating them herself or looking for a tool online I immediately jumped
+                     at the challenge and thought I would build it in R.")
+          ))
             ,br()
             ,br()
             ,p(strong("Developed by: "),
@@ -61,37 +57,11 @@ ui <- dashboardPage(
             tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto:300italic,400,700")
         ),
         style="font-family: 'Roboto';",
-        tags$head(tags$style(custom_colors)),
-        p("this is a test if I can push content without tabs?")
-        # tabItems(
-        #   tabItem(tabName = "about",
-        #           box(title = "Welcome!",solidHeader = TRUE,status = "primary",width=12,
-        #           h3("This dashboard is a Business Intelligence (BI) tool built off of R using Shiny and related packages.
-        #               Please consider it a proof of concept rather than a fully featured BI tool. There are many freely available
-        #               BI tools with much richer feature sets (e.g., Microsoft Power BI, Tableau, Excel). In fact,
-        #             this tool was heavily inspired by RapidMiner and JMP."),
-        #           h3("Follow the tabs to the left in numeric order to see what this dashboard can do!")
-        #   )),
-          # tabItem(tabName = "upload",
-          #         fluidRow(
-          #           box(title=p(icon("file-copy",class = "fas"),"Upload Data"),
-          #               width=12,
-          #               p("Only a true CSV file with headers will work with this tool."),
-          #               fileInput("data_file", "Choose a CSV File",
-          #                         multiple = FALSE,
-          #                         accept = c("text/csv",
-          #                                    "text/comma-separated-values,text/plain",
-          #                                    ".csv")),
-          #               h4("Don't have any data to upload?"),
-          #               selectInput('select_dataset',"Choose a Dataset Instead: ",
-          #                           c("Upload","Post-Grad Outcomes"
-          #                             ,"Department of Education API"
-          #                             ,"iris","diamonds","PlantGrowth"),
-          #                           selected = "Upload")
-          #               ),
-          #           infoBoxOutput('file_columns'),
+        tags$head(tags$style(custom_colors))
+        , p("this is a test if I can push content without tabs?")
+        , plotOutput("preview")
+
           #           infoBoxOutput('file_rows'),
-          #           infoBoxOutput('file_size'),
           #           box(solidHeader = TRUE,width=12,title = "Preview Data",status = "success",
           #               dataTableOutput("full_dataset")))),
           

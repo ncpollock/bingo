@@ -1,4 +1,8 @@
 
+# letter validation on BINGO headers
+
+sidebar_width <- "450px"
+
 #initialize colors
 v_light_gray <- '#a3a3a3' #'#CDCDCD'
 v_light_gray2 <- '#bebebe'
@@ -18,15 +22,30 @@ charcoal <- '#3d3d3d'
 
 library(shiny)
 library(shinydashboard)
-library(shinyBS)
+# library(shinyBS)
 library(DT)
-library(googleVis)
 library(ggplot2)
-library(scales)
 library(dplyr)
 library(tidyr)
-library(maps)
-library(cowplot)
+library(stringr)
+library(png) # for displaying heart image
+library(grid)
+
+# create grids
+grid_df <- data.frame(
+  x = rep(1:5, 5),
+  y = rep(1:5, each = 5),
+  w = 1
+)
+
+# initialize list to store plots
+plot_list = list()
+
+heart <- readPNG("www/heart.png")
+g <- rasterGrob(heart, interpolate=TRUE)
+
+tiles <- 25
+guests <- 55
 
 # style column names / header for datatables
 dt_column_head <- JS(

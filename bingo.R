@@ -14,7 +14,7 @@ library(ggplot2)
 library(png) # for displaying heart image
 library(grid)
 
-bingo_df <- read.csv("bingo.csv"
+bingo_df <- read.csv("wedding.csv"
   , stringsAsFactors = FALSE
 )
 
