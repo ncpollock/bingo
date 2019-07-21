@@ -11,6 +11,7 @@ v_dark_gray <- '#323232' #'#252525'
 v_dark_gray2 <- '#595959'
 plum <- '#24292e' # '#8c001a'
 chocolate <- '#7d430e'
+sidebar_gray <- '#222d32'
 
 #test color pallette
 electric_lime <- '#88D317'
@@ -73,66 +74,72 @@ my_theme <- theme(panel.background = element_blank(),
                   legend.title = element_blank())
 
 custom_colors <- ""
-# 
-# # use custom color pallette across app
-# custom_colors <- HTML(paste0('
-#                                          /* logo */
-#                              .skin-blue .main-header .logo {
-#                              background-color:',maroon1,';
-#                              }
-#                              
-#                              /* logo when hovered */
-#                              .skin-blue .main-header .logo:hover {
-#                              background-color:',maroon1,';
-#                              }
-#                              
-#                              /* toggle button when hovered  */
-#                              .skin-blue .main-header .navbar .sidebar-toggle:hover{
-#                              background-color:',v_dark_gray,';
-#                              }
-#                              
-#                              /* navbar (rest of the header) */
-#                              .skin-blue .main-header .navbar {
-#                              background-color:',maroon1,';
-#                              }
-#                              
-#                              /* main sidebar */
-#                              .skin-blue .main-sidebar {
-#                              background-color:',v_dark_gray,';
-#                              }
-#                              
-#                              .skin-blue .sidebar-menu > li:hover > a,
-#                              .skin-blue .sidebar-menu > li.active > a {
-#                              color: white;
-#                              background:',maroon1,';
-#                              border-left-color:',maroon1,';
-#                              }
-#                              .skin-blue .sidebar-menu > li > .treeview-menu {
-#                              margin: 0 1px;
-#                              background:',med_gray,';
-#                              }
-#                              .skin-blue .treeview-menu > li.active > a,
-#                              .skin-blue .treeview-menu > li > a:hover {
-#                              color: white;
-#                              background:',maroon1,';
-#                              }
-#                              
-#                              .skin-blue .sidebar a {
-#                              color: white;
-#                              }
-#                              .skin-blue .treeview-menu > li > a {
-#                              color: white;
-#                              }
-#                              
-#                              .small-box h3 {
-#                              font-size: 38px;
-#                              font-weight: 700;
-#                              margin: 0 0 10px;
-#                              white-space: nowrap;
-#                              padding: 0;
-#                              }
-#                              .bg-primary {
-#                              color: #fff;
-#                              background-color: #337ab7;
-#                              }
-#                              '))
+
+# use custom color pallette across app
+custom_colors <- HTML(paste0('
+                                         /* logo */
+                             .skin-blue .main-header .logo {
+                             background-color:',sidebar_gray,';
+                             }
+
+                             /* logo when hovered */
+                             .skin-blue .main-header .logo:hover {
+                             background-color:',sidebar_gray,';
+                              color:',sidebar_gray,';
+                             }
+
+                             /* toggle button when hovered  */
+                             .skin-blue .main-header .navbar .sidebar-toggle:hover{
+                             background-color:',sidebar_gray,';
+                              color:',sidebar_gray,';
+                             }
+.skin-blue .main-header .navbar .sidebar-toggle {color:',sidebar_gray,';}
+
+                             /* navbar (rest of the header) */
+                             .skin-blue .main-header .navbar {
+                             background-color:',sidebar_gray,';
+                             }
+
+                             /* main sidebar */
+/* disabled
+                             .skin-blue .main-sidebar {
+                             background-color:',v_dark_gray,';
+                             }
+
+                             .skin-blue .sidebar-menu > li:hover > a,
+                             .skin-blue .sidebar-menu > li.active > a {
+                             color: white;
+                             background:',cyan,';
+                             border-left-color:',cyan,';
+                             }
+                             .skin-blue .sidebar-menu > li > .treeview-menu {
+                             margin: 0 1px;
+                             background:',med_gray,';
+                             }
+                             .skin-blue .treeview-menu > li.active > a,
+                             .skin-blue .treeview-menu > li > a:hover {
+                             color: white;
+                             background:',cyan,';
+                             }
+
+                             .skin-blue .sidebar a {
+                             color: white;
+                             }
+                             .skin-blue .treeview-menu > li > a {
+                             color: white;
+                             }
+
+                             .small-box h3 {
+                             font-size: 38px;
+                             font-weight: 700;
+                             margin: 0 0 10px;
+                             white-space: nowrap;
+                             padding: 0;
+                             }
+                             .bg-primary {
+                             color: #fff;
+                             background-color: #337ab7;
+                             }
+
+*/
+                             '))
