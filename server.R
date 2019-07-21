@@ -83,14 +83,14 @@ shinyServer(function(input, output, clientData, session) {
         mutate(Tiles = ifelse(x==3 & y==3,"♥",Tiles))
       
       ggplot(plot_df, aes(x, y, width = w)) +
-        geom_tile(color = "black",fill=NA) +
-        geom_text(aes(label=Tiles), color = input$tile_text_color) +
+        geom_tile(color = input$tile_lines,fill=input$tile_color) +
+        geom_text(aes(label=Tiles), color = input$tile_text_color, size = input$tile_text_size) +
         # annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) + # adds custom image to free space
         geom_text(data = data.frame(
           head = unlist(strsplit(input$head_letters,"")),x=1:5,y=6,w=1)
           , aes(x=x,y=y,label=head)
           , color = input$head_text_color
-          , size = 14) +
+          , size = input$head_text_size) +
         scale_y_continuous(
           limits = c(0,6.2)
         ) +
@@ -98,7 +98,7 @@ shinyServer(function(input, output, clientData, session) {
               , axis.text = element_blank()
               , axis.title = element_blank()
               , axis.line = element_blank()
-              , plot.title = element_text(hjust = 0.5,size = 14)
+              # , plot.title = element_text(hjust = 0.5,size = 14)
               , axis.ticks = element_blank()
               , panel.border = element_rect(colour = "black", fill=NA, size=5)
               , plot.margin=grid::unit(rep(.25,4), "in")

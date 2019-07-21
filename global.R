@@ -1,5 +1,6 @@
 
 # letter validation on BINGO headers
+# customize fonts: https://stackoverflow.com/questions/55100069/ggplot-with-customized-font-not-showing-properly-on-shinyapps-io/55158772#55158772
 
 sidebar_width <- "450px"
 
@@ -24,13 +25,14 @@ charcoal <- '#3d3d3d'
 library(shiny)
 library(shinydashboard)
 # library(shinyBS)
-library(DT)
+# library(DT)
 library(ggplot2)
 library(dplyr)
-library(tidyr)
+# library(tidyr)
 library(stringr)
 library(png) # for displaying heart image
 library(grid)
+library(shinyWidgets)
 
 # create grids
 grid_df <- data.frame(
@@ -75,13 +77,14 @@ custom_colors <- ""
 custom_colors <- HTML(paste0('
                                          /* logo */
                              .skin-blue .main-header .logo {
-                             background-color:',sidebar_gray,';
+                             background-color: #141a1d;
+                              color: white;
                              }
 
                              /* logo when hovered */
                              .skin-blue .main-header .logo:hover {
                              background-color:',sidebar_gray,';
-                              color:',sidebar_gray,';
+                              color:','white',';
                              }
 
                              /* toggle button when hovered  */

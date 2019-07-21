@@ -4,50 +4,67 @@
 ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.css"),
   dashboardPage(
     dashboardHeader(
-    # title = "Bingo Generator"
-    #                 , titleWidth = sidebar_width
-                    # disable = TRUE
+    title = p(HTML("<i class='fa fa-ticket'></i>"),"Bingo Generator")
+                    , titleWidth = sidebar_width
                     ),
     
     sidebar <- dashboardSidebar(
       width = sidebar_width
       , sidebarMenu(
          br()
-          , fluidPage(
-          HTML("<i class='fa fa-ticket fa-5x fa-pull-left' style='color: green;'></i>")
-          # 'display:block; font-size: 50px; text-align: center;'
-          # , br()
-          , downloadButton("download_bingo","Download Bingo Sheets",style="align:center;background-color: blue; vertical-align: middle")
-          )
-          # , br()
-          # , br()
-          # , br()
+          , downloadButton("download_bingo","Download Bingo Sheets"
+                         ,style="text-align:center;background-color: blue; vertical-align: middle")
           , menuItem("Select Your Content", icon = icon("search")
                      , startExpanded = TRUE
                      , selectInput('theme',"Choose a theme: ",
                                    c("Wedding","Star Wars","Numbers","Upload Custom List"),
                                    selected = "Wedding")
                      # show only on "Upload Custom List" selection
+                     # use insertui and removeui?
                      , fileInput("data_file", "Upload your own CSV file:",
                                  multiple = FALSE,
                                  accept = c("text/csv",
                                             "text/comma-separated-values,text/plain",
-                                            ".csv")))
-          , menuItem("Iron Out the Details",icon = icon("gear")
-                     , sliderInput("boards","How many game boards do you need?",1,150,10)
-                     )
-          , menuItem("Formats and Styles",icon = icon("paint-brush")
-                     # create modal window and update to validate 5 letters
+                                            ".csv"))
+                     # create modal window and update to validate 5 letters?
                      , textInput('head_letters',"Choose five letters to be columns:"
-                                   , value = "BINGO")
-                     , textInput('head_text_color',"Text color for column letters:"
-                                 , value = "black")
-                     , textInput('tile_text_color',"Text color for tiles:"
-                                 , value = "black")
-                     , textInput('panel_color',"Background color:"
-                                 , value = "white")
-
+                                 , value = "BINGO")
                      )
+          , menuItem("Iron Out the Details",icon = icon("gear")
+                     , sliderInput("boards","How many game boards do you need?",1,150,10,width="100%")
+                     , sliderInput("boards","How many game boards do you want per page?",1,2,1
+                                   ,step = 1,width = "100%")
+                     , radioGroupButtons(
+                       inputId = "page_layout", label = p(icon("file-text"),"Page Layout: "), 
+                       choices = c("Portrait", "Landscape"),
+                       justified = TRUE, status = "primary",
+                       checkIcon = list(yes = icon("ok", lib = "glyphicon"))
+                     )
+                     # ,       prettyRadioButtons(inputId = "checkgroup5",
+                     #                             label = "Click me!", icon = icon("check"),
+                     #                             choices = c("Portrait", "Landscape")
+                     #                            # ,icon = icon("document")
+                     #                             ,animation = "pulse", status = "default")
+                     )
+          , menuItem("Colors",icon = icon("paint-brush")
+                     , textInput('head_text_color',"Text for column letters:"
+                                 , value = "black")
+                     , textInput('tile_text_color',"Text for tiles:"
+                                 , value = "black")
+                     , textInput('panel_color',"Board Background:"
+                                 , value = "white")
+                     , textInput('tile_color',"Tile Background:"
+                                 , value = "white") 
+                     , textInput('tile_lines',"Tile Outlines:"
+                                 , value = "black")
+                     )
+         , menuItem("Font",icon = icon("font")
+                    , sliderInput("head_text_size","Column letter Size",1,44,14
+                                  ,step = .5,width = "100%")
+                    , sliderInput("tile_text_size","Column letter Size",1,12,5
+                                  ,step = .5,width = "100%")
+                    , selectInput("font","Choose a Font:",choices = "Coming Soon!")
+         )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"
                     , p("In May 2019, my sister-in-law mentioned she was going to play Bingo at her wedding shower.
