@@ -54,6 +54,18 @@ shinyServer(function(input, output, clientData, session) {
   output$download_bingo <- downloadHandler(
     filename = "bingo.pdf",
     content = function(file) {
+      withProgress(message = 'Creating Bingo Boards', value = 0, {
+        
+        if(input$page_layout==TRUE){
+        ggsave("www/bingo.pdf"
+               , gridExtra::marrangeGrob(grobs = plot_list(), nrow=boards_per_page, ncol=1,top = NULL))
+        } else {
+        ggsave("www/bingo.pdf"
+               , gridExtra::marrangeGrob(grobs = plot_list(), nrow=1, ncol=input$boards_per_page,top = NULL)
+               ,width=11, height=8.5)
+        } # else
+      }) # withProgress
+
       file.copy("www/bingo.pdf", file)
     }
   )
@@ -74,36 +86,45 @@ shinyServer(function(input, output, clientData, session) {
     #            icon=icon("align-justify"),
     #            color="blue")
     # })
-    
+  
     output$preview <- renderPlot(height = 550, {
       
       plot_df <- grid_df %>%
         mutate(Tiles = str_wrap(sample(bingo_df()$Tiles,25),width = 8)) %>%
         # force center to be a free space, separate variable to give it unique aesthetics
-        mutate(Tiles = ifelse(x==3 & y==3,"♥",Tiles))
+        mutate(Tiles = ifelse(x==3 & y==3,input$free_space,Tiles))
       
-      ggplot(plot_df, aes(x, y, width = w)) +
+      # clear free space when user selects a shape/image
+      if(input$free_space %in% c("Heart","blank")) {
+        plot_df <- plot_df %>%
+          mutate(Tiles = ifelse(x==3 & y==3,NA,Tiles))
+      }
+      
+      temp_plot <- ggplot(plot_df, aes(x, y, width = w)) +
         geom_tile(color = input$tile_lines,fill=input$tile_color) +
         geom_text(aes(label=Tiles), color = input$tile_text_color, size = input$tile_text_size) +
-        # annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) + # adds custom image to free space
         geom_text(data = data.frame(
           head = unlist(strsplit(input$head_letters,"")),x=1:5,y=6,w=1)
           , aes(x=x,y=y,label=head)
           , color = input$head_text_color
           , size = input$head_text_size) +
-        scale_y_continuous(
-          limits = c(0,6.2)
-        ) +
+        scale_y_continuous(limits = c(0,6.2)) +
         theme(panel.background = element_rect(fill=input$panel_color)
               , axis.text = element_blank()
               , axis.title = element_blank()
               , axis.line = element_blank()
-              # , plot.title = element_text(hjust = 0.5,size = 14)
               , axis.ticks = element_blank()
               , panel.border = element_rect(colour = "black", fill=NA, size=5)
               , plot.margin=grid::unit(rep(.25,4), "in")
         )
       
+      # add free space shape/image if selected
+      if(input$free_space=="Heart") {
+        temp_plot <- temp_plot + 
+          annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) # adds custom image to free space
+      }
+      
+      temp_plot
     })
     
 
@@ -114,34 +135,43 @@ shinyServer(function(input, output, clientData, session) {
       
       for(i in 1:input$boards){
         plot_df <- grid_df %>%
-          mutate(gift = str_wrap(sample(bingo_df$Gift_Title,25),width = 8)) %>%
+          mutate(Tiles = str_wrap(sample(bingo_df()$Tiles,25),width = 8)) %>%
           # force center to be a free space, separate variable to give it unique aesthetics
-          mutate(gift = ifelse(x==3 & y==3,NA,gift))
+          mutate(Tiles = ifelse(x==3 & y==3,input$free_space,Tiles))
+        
+        # clear free space when user selects a shape/image
+        if(input$free_space %in% c("Heart","blank")) {
+          plot_df <- plot_df %>%
+            mutate(Tiles = ifelse(x==3 & y==3,NA,Tiles))
+        }
         
         temp_plot <- ggplot(plot_df, aes(x, y, width = w)) +
-          geom_tile(color = "black",fill=NA) +
-          geom_text(aes(label=gift)) +
-          annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) +
+          geom_tile(color = input$tile_lines,fill=input$tile_color) +
+          geom_text(aes(label=Tiles), color = input$tile_text_color, size = input$tile_text_size) +
           geom_text(data = data.frame(
             head = unlist(strsplit(input$head_letters,"")),x=1:5,y=6,w=1)
             , aes(x=x,y=y,label=head)
-            , size = 14) +
-          scale_y_continuous(
-            limits = c(0,6.2)
-          ) +
-          theme(panel.background = element_blank()
+            , color = input$head_text_color
+            , size = input$head_text_size) +
+          scale_y_continuous(limits = c(0,6.2)) +
+          theme(panel.background = element_rect(fill=input$panel_color)
                 , axis.text = element_blank()
                 , axis.title = element_blank()
                 , axis.line = element_blank()
-                , plot.title = element_text(hjust = 0.5,size = 14)
                 , axis.ticks = element_blank()
                 , panel.border = element_rect(colour = "black", fill=NA, size=5)
                 , plot.margin=grid::unit(rep(.25,4), "in")
           )
         
+        if(input$free_space=="Heart") {
+          temp_plot <- temp_plot + 
+            annotation_custom(g, xmin=2.5, xmax=3.5, ymin=2.5, ymax=3.5) # adds custom image to free space
+        }
+        
         plot_list[[i]] <- temp_plot
         
       }
+      plot_list
     })
     
     

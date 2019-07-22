@@ -29,10 +29,16 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      # create modal window and update to validate 5 letters?
                      , textInput('head_letters',"Choose five letters to be columns:"
                                  , value = "BINGO")
+                     , selectInput("free_space","What do you want in the free space?:"
+                                   , choices = list(
+                                     "Text" = list("FREE","Free","*")
+                                     , "Shape" = list("Heart")
+                                     , "Other" = list("blank")))
+                     
                      )
           , menuItem("Iron Out the Details",icon = icon("gear")
                      , sliderInput("boards","How many game boards do you need?",1,150,10,width="100%")
-                     , sliderInput("boards","How many game boards do you want per page?",1,2,1
+                     , sliderInput("boards_per_page","How many game boards do you want per page?",1,2,1
                                    ,step = 1,width = "100%")
                      , radioGroupButtons(
                        inputId = "page_layout", label = p(icon("file-text"),"Page Layout: "), 
