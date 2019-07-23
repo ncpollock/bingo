@@ -1,8 +1,6 @@
 
 # letter validation on BINGO headers
 # customize fonts: https://stackoverflow.com/questions/55100069/ggplot-with-customized-font-not-showing-properly-on-shinyapps-io/55158772#55158772
-# size preview appropriately (or load pdf)
-# about text
 
 sidebar_width <- "450px"
 
@@ -86,7 +84,7 @@ custom_colors <- HTML(paste0('
 
                              /* logo when hovered */
                              .skin-blue .main-header .logo:hover {
-                             background-color:',sidebar_gray,';
+                             background-color: #141a1d;
                               color:','white',';
                              }
 
