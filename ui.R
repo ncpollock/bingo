@@ -12,20 +12,18 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
       width = sidebar_width
       , sidebarMenu(
          br()
-          , downloadButton("download_bingo","Download Bingo Sheets"
-                         ,style="text-align:center;background-color: blue; vertical-align: middle")
+          , div(style="text-align:center;vertical-align: middle"
+            ,downloadButton("download_bingo","Download Bingo Sheets",width = sidebar_width, height = "100px"
+                         # , style="background-color: #4be0f6;"
+                         , class = "my_button"
+                         ))
+         , br()
           , menuItem("Select Your Content", icon = icon("search")
                      , startExpanded = TRUE
                      , selectInput('theme',"Choose a theme: ",
                                    c("Wedding","Star Wars","Numbers","Upload Custom List"),
                                    selected = "Wedding")
-                     # show only on "Upload Custom List" selection
-                     # use insertui and removeui?
-                     , fileInput("data_file", "Upload your own CSV file:",
-                                 multiple = FALSE,
-                                 accept = c("text/csv",
-                                            "text/comma-separated-values,text/plain",
-                                            ".csv"))
+                     , a(id="file_upload_placeholder")
                      # create modal window and update to validate 5 letters?
                      , textInput('head_letters',"Choose five letters to be columns:"
                                  , value = "BINGO")
@@ -37,7 +35,7 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      
                      )
           , menuItem("Iron Out the Details",icon = icon("gear")
-                     , sliderInput("boards","How many game boards do you need?",1,150,10,width="100%")
+                     , sliderInput("boards","How many game boards do you need?",2,150,10,width="100%")
                      , sliderInput("boards_per_page","How many game boards do you want per page?",1,2,1
                                    ,step = 1,width = "100%")
                      , radioGroupButtons(
@@ -67,15 +65,19 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
          , menuItem("Font",icon = icon("font")
                     , sliderInput("head_text_size","Column letter Size",1,44,14
                                   ,step = .5,width = "100%")
-                    , sliderInput("tile_text_size","Column letter Size",1,12,5
+                    , sliderInput("tile_text_size","Tile letter Size",1,12,5
                                   ,step = .5,width = "100%")
                     , selectInput("font","Choose a Font:",choices = "Coming Soon!")
          )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"
                     , p("In May 2019, my sister-in-law mentioned she was going to play Bingo at her wedding shower.
-                     As she thought about creating them herself or looking for a tool online I immediately jumped
-                     at the challenge and thought I would build it in R.")
+                     As she thought about creating the boards herself or looking for a tool online I jumped
+                     at the idea to build it myself in R. Impractical, perhaps, but it was a lot of fun!
+                        It took me less time than expected to create a halfway decent board, so I decided to
+                        build this shiny app with my spare time. Though functional, it is a work in progress.
+                        For example, I am still working on an algorithm that would mitigate the potential 
+                        for multiple wins at the same time.")
           ))
             ,br()
             ,br()
@@ -115,11 +117,16 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
         )
         , style="font-family: 'Roboto';",
         tags$head(tags$style(custom_colors))
-        , fluidPage(style="height: 1000px;"
-        , h3("Preview Your Bingo Board!")
-        , p("Note that this preview version is likely distorted compared to the downloaded version.")
-        , plotOutput("preview")
-        )
+        , fluidRow(
+          box(title = title_collapse("Quick Preview"), solidHeader = TRUE, width = 12, status = 'primary', collapsible = TRUE
+              , p("Note that this preview version is fast, but it's likely distorted. Generate an actual PDF
+                  preview below when you have the formatting you want.")
+              , plotOutput("preview", height = 500)
+        ))
+        , actionButton('generate_pdf_preview',"Generate Actual PDF Preview"
+                       ,icon = icon("file-pdf-o"), class = "my_button", width = "100%")
+        , p("Note that this only generates two bingo boards to preview how the actual PDF download will look.")
+        , uiOutput("pdf_preview")
           #           infoBoxOutput('file_rows'),
           #           box(solidHeader = TRUE,width=12,title = "Preview Data",status = "success",
           #               dataTableOutput("full_dataset")))),

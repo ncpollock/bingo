@@ -30,7 +30,7 @@ shinyServer(function(input, output, clientData, session) {
         
       } else {
         
-      inFile <- input$data_file
+      inFile <- input$custom_list
       
       if (is.null(inFile))
         return(NULL)
@@ -40,8 +40,19 @@ shinyServer(function(input, output, clientData, session) {
                           na.strings = c("","NA","N/A"," ")
                           #,header = input$header, sep = input$sep, quote = input$quote
       )
-      }
       
+      }
+    
+    validate(
+      need(nrow(bingo_df) > 24, "You must have at least 25 items (rows) in your file.")
+    )
+    
+    validate(
+      need(is.data.frame(bingo_df), "You must upload a CSV file if you want to use a Custom List.")
+    )
+    
+    # rename first column to 'tiles'
+    names(bingo_df)[1] <- "tiles"
     
     # avoid duplicates and cap text
     bingo_df <- bingo_df %>%
@@ -70,6 +81,26 @@ shinyServer(function(input, output, clientData, session) {
     }
   )
   
+  # if custom list is selected, show a file upload option.
+  observeEvent(input$theme, {
+    
+    if(input$theme == "Upload Custom List"){
+    insertUI(
+      selector = "#file_upload_placeholder",
+      where = "beforeBegin",
+      ui = div(id = "custom_list_container"
+               , fileInput("custom_list", "Upload your own CSV file:",
+                     multiple = FALSE,
+                     accept = c("text/csv",
+                                "text/comma-separated-values,text/plain",
+                                ".csv"))
+      )
+    )
+    } else {
+      removeUI(selector = "#custom_list_container")
+    }
+    
+  })
   
     # output$full_dataset <- renderDataTable({
     #   
@@ -87,7 +118,11 @@ shinyServer(function(input, output, clientData, session) {
     #            color="blue")
     # })
   
-    output$preview <- renderPlot(height = 550, {
+    output$preview <- renderPlot(height = 500, {
+      
+      validate(
+        need(!is.null(bingo_df()), "You must upload a CSV file if you want to use a Custom List.")
+      )
       
       plot_df <- grid_df %>%
         mutate(Tiles = str_wrap(sample(bingo_df()$Tiles,25),width = 8)) %>%
@@ -127,6 +162,22 @@ shinyServer(function(input, output, clientData, session) {
       temp_plot
     })
     
+    observeEvent(input$generate_pdf_preview, {
+    output$pdf_preview <- renderUI({
+      isolate({
+      # save preview pdf
+      if(input$page_layout==TRUE){
+        ggsave("www/preview_bingo.pdf"
+               , gridExtra::marrangeGrob(grobs = plot_list()[1:2], nrow=boards_per_page, ncol=1,top = NULL))
+      } else {
+        ggsave("www/preview_bingo.pdf"
+               , gridExtra::marrangeGrob(grobs = plot_list()[1:2], nrow=1, ncol=input$boards_per_page,top = NULL)
+               ,width=11, height=8.5)
+      } # else
+      }) # isolate
+      tags$iframe(style="height:600px; width:100%", src="preview_bingo.pdf")
+    })
+    })
 
     plot_list <- reactive({
       
