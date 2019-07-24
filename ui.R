@@ -36,8 +36,6 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      )
           , menuItem("Iron Out the Details",icon = icon("gear")
                      , sliderInput("boards","How many game boards do you need?",2,150,10,width="100%")
-                     # , sliderInput("boards_per_page","How many game boards do you want per page?",1,2,1
-                     #               ,step = 1,width = "100%")
                      , radioGroupButtons(
                        inputId = "boards_per_page", label = p(icon("columns"),"How many game boards do you want per page?"), 
                        choiceNames = c("One","Two")
@@ -48,27 +46,27 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      , radioGroupButtons(
                        inputId = "page_layout", label = p(icon("file-text"),"Page Layout: "), 
                        choiceNames = c(HTML("Portrait: <i class='fa fa-file-pdf-o'></i>"),HTML("Landscape: <i class='fa fa-file-pdf-o fa-rotate-90'></i>"))
-                       , choiceValues =  c(TRUE, FALSE),
+                       , choiceValues =  c(TRUE, FALSE)
                        , justified = TRUE, status = "primary",
                        checkIcon = list(yes = icon("ok", lib = "glyphicon"))
                      )
-                     # ,       prettyRadioButtons(inputId = "checkgroup5",
-                     #                             label = "Click me!", icon = icon("check"),
-                     #                             choices = c("Portrait", "Landscape")
-                     #                            # ,icon = icon("document")
-                     #                             ,animation = "pulse", status = "default")
                      )
           , menuItem("Colors",icon = icon("paint-brush")
-                     , textInput('head_text_color',"Text for column letters:"
-                                 , value = "black")
-                     , textInput('tile_text_color',"Text for tiles:"
-                                 , value = "black")
-                     , textInput('panel_color',"Board Background:"
-                                 , value = "white")
-                     , textInput('tile_color',"Tile Background:"
-                                 , value = "white") 
-                     , textInput('tile_lines',"Tile Outlines:"
-                                 , value = "black")
+                     # , textInput('head_text_color',"Text for column letters:"
+                     #             , value = "black")
+                     # , textInput('tile_text_color',"Text for tiles:"
+                     #             , value = "black")
+                     # , textInput('panel_color',"Board Background:"
+                     #             , value = "white")
+                     # , textInput('tile_color',"Tile Background:"
+                     #             , value = "white") 
+                     # , textInput('tile_lines',"Tile Outlines:"
+                     #             , value = "black")
+                     , colourInput("head_text_color", "Text for column letters:", "black")
+                     , colourInput("tile_text_color", "Text for tiles:", "black")
+                     , colourInput("panel_color", "Board Background:", "white")
+                     , colourInput("tile_color", "Tile Background:", "white")
+                     , colourInput("tile_lines", "Tile Outlines:", "black")
                      )
          , menuItem("Font",icon = icon("font")
                     , sliderInput("head_text_size","Column letter Size",1,44,14

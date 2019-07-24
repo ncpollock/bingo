@@ -1,6 +1,8 @@
 
 # letter validation on BINGO headers
 # customize fonts: https://stackoverflow.com/questions/55100069/ggplot-with-customized-font-not-showing-properly-on-shinyapps-io/55158772#55158772
+# 12 / (prod(75:71) / factorial(5))
+# color picker
 
 sidebar_width <- "450px"
 
@@ -31,6 +33,7 @@ library(png) # for displaying heart image
 library(grid)
 library(shinyWidgets)
 library(gridExtra)
+library(colourpicker)
 
 # create grids
 grid_df <- data.frame(
@@ -52,18 +55,6 @@ title_collapse <- function(x){
            ,'</strong>'))
 }
 
-# set general theme for ggplots
-my_theme <- theme(panel.background = element_blank(),
-                  axis.text = element_text(size = '15'),
-                  axis.title = element_text(size = '18'),
-                  axis.line = element_line(color = 'black'),
-                  strip.background = element_rect(fill = 'black'),
-                  strip.text = element_text(color = 'white',size = '18'),
-                  legend.position = "bottom",
-                  legend.text = element_text(size = '18'),
-                  legend.title = element_blank())
-
-custom_colors <- ""
 
 # use custom color pallette across app
 custom_colors <- HTML(paste0('
@@ -82,9 +73,9 @@ custom_colors <- HTML(paste0('
                              /* toggle button when hovered  */
                              .skin-blue .main-header .navbar .sidebar-toggle:hover{
                              background-color:',sidebar_gray,';
-                              color:',sidebar_gray,';
+                              color:black;
                              }
-.skin-blue .main-header .navbar .sidebar-toggle {color:',sidebar_gray,';}
+.skin-blue .main-header .navbar .sidebar-toggle {color:white;}
 
                              /* navbar (rest of the header) */
                              .skin-blue .main-header .navbar {

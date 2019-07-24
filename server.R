@@ -144,7 +144,7 @@ shinyServer(function(input, output, clientData, session) {
           , color = input$head_text_color
           , size = input$head_text_size) +
         scale_y_continuous(limits = c(0,6.2)) +
-        theme(panel.background = element_rect(fill=input$panel_color)
+        theme(panel.background = element_rect(fill=input$panel_color,color = NA)
               , axis.text = element_blank()
               , axis.title = element_blank()
               , axis.line = element_blank()
@@ -205,7 +205,7 @@ shinyServer(function(input, output, clientData, session) {
             , color = input$head_text_color
             , size = input$head_text_size) +
           scale_y_continuous(limits = c(0,6.2)) +
-          theme(panel.background = element_rect(fill=input$panel_color)
+          theme(panel.background = element_rect(fill=input$panel_color, color = NA)
                 , axis.text = element_blank()
                 , axis.title = element_blank()
                 , axis.line = element_blank()
