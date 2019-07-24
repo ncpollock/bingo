@@ -24,11 +24,8 @@ charcoal <- '#3d3d3d'
 
 library(shiny)
 library(shinydashboard)
-# library(shinyBS)
-# library(DT)
 library(ggplot2)
 library(dplyr)
-# library(tidyr)
 library(stringr)
 library(png) # for displaying heart image
 library(grid)
@@ -46,12 +43,6 @@ heart <- readPNG("www/heart.png")
 g <- rasterGrob(heart, interpolate=TRUE)
 
 tiles <- 25
-
-# style column names / header for datatables
-dt_column_head <- JS(
-  "function(settings, json) {",
-  "$(this.api().table().header()).css({'background-color': '#3d3d3d', 'color': '#fff'});",
-  "}")
 
 # allow box collapse on title click
 title_collapse <- function(x){

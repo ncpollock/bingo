@@ -4,7 +4,7 @@
 ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.css"),
   dashboardPage(
     dashboardHeader(
-    title = p(HTML("<i class='fa fa-ticket'></i>"),"Bingo Generator")
+    title = "Bingo Generator"
                     , titleWidth = sidebar_width
                     ),
     
@@ -36,12 +36,20 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      )
           , menuItem("Iron Out the Details",icon = icon("gear")
                      , sliderInput("boards","How many game boards do you need?",2,150,10,width="100%")
-                     , sliderInput("boards_per_page","How many game boards do you want per page?",1,2,1
-                                   ,step = 1,width = "100%")
+                     # , sliderInput("boards_per_page","How many game boards do you want per page?",1,2,1
+                     #               ,step = 1,width = "100%")
+                     , radioGroupButtons(
+                       inputId = "boards_per_page", label = p(icon("columns"),"How many game boards do you want per page?"), 
+                       choiceNames = c("One","Two")
+                       , choiceValues =  1:2,
+                       justified = TRUE, status = "primary",
+                       checkIcon = list(yes = icon("ok", lib = "glyphicon"))
+                     )
                      , radioGroupButtons(
                        inputId = "page_layout", label = p(icon("file-text"),"Page Layout: "), 
-                       choices = c("Portrait", "Landscape"),
-                       justified = TRUE, status = "primary",
+                       choiceNames = c(HTML("Portrait: <i class='fa fa-file-pdf-o'></i>"),HTML("Landscape: <i class='fa fa-file-pdf-o fa-rotate-90'></i>"))
+                       , choiceValues =  c(TRUE, FALSE),
+                       , justified = TRUE, status = "primary",
                        checkIcon = list(yes = icon("ok", lib = "glyphicon"))
                      )
                      # ,       prettyRadioButtons(inputId = "checkgroup5",

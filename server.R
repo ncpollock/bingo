@@ -69,10 +69,10 @@ shinyServer(function(input, output, clientData, session) {
         
         if(input$page_layout==TRUE){
         ggsave("www/bingo.pdf"
-               , gridExtra::marrangeGrob(grobs = plot_list(), nrow=boards_per_page, ncol=1,top = NULL))
+               , gridExtra::marrangeGrob(grobs = plot_list(), nrow=as.numeric(input$boards_per_page), ncol=1,top = NULL))
         } else {
         ggsave("www/bingo.pdf"
-               , gridExtra::marrangeGrob(grobs = plot_list(), nrow=1, ncol=input$boards_per_page,top = NULL)
+               , gridExtra::marrangeGrob(grobs = plot_list(), nrow=1, ncol=as.numeric(input$boards_per_page),top = NULL)
                ,width=11, height=8.5)
         } # else
       }) # withProgress
@@ -168,10 +168,10 @@ shinyServer(function(input, output, clientData, session) {
       # save preview pdf
       if(input$page_layout==TRUE){
         ggsave("www/preview_bingo.pdf"
-               , gridExtra::marrangeGrob(grobs = plot_list()[1:2], nrow=boards_per_page, ncol=1,top = NULL))
+               , gridExtra::marrangeGrob(grobs = plot_list()[1:2], nrow=as.numeric(input$boards_per_page), ncol=1,top = NULL))
       } else {
         ggsave("www/preview_bingo.pdf"
-               , gridExtra::marrangeGrob(grobs = plot_list()[1:2], nrow=1, ncol=input$boards_per_page,top = NULL)
+               , gridExtra::marrangeGrob(grobs = plot_list()[1:2], nrow=1, ncol=as.numeric(input$boards_per_page),top = NULL)
                ,width=11, height=8.5)
       } # else
       }) # isolate
