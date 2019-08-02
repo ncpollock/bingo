@@ -42,10 +42,23 @@ grid_df <- data.frame(
   w = 1
 )
 
+# set special image(s) for free space
 heart <- readPNG("www/heart.png")
 g <- rasterGrob(heart, interpolate=TRUE)
 
 tiles <- 25
+
+plot_font <- "Courier"
+
+if(Sys.info()[['sysname']] == "Linux"){
+  dir.create('~/.fonts')
+  file.copy("www/Bonbon-Regular.ttf", "~/.fonts")
+  file.copy("www/Butcherman-Regular.ttf", "~/.fonts")
+  file.copy("www/ButterflyKids-Regular.ttf", "~/.fonts")
+  system('fc-cache -f ~/.fonts')
+  
+  plot_font <- "Bonbon-Regular"
+}
 
 # allow box collapse on title click
 title_collapse <- function(x){

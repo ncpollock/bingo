@@ -29,7 +29,7 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                                  , value = "BINGO")
                      , selectInput("free_space","What do you want in the free space?:"
                                    , choices = list(
-                                     "Text" = list("FREE","Free","*")
+                                     "Text" = list("FREE","Free","X","*")
                                      , "Shape" = list("Heart")
                                      , "Other" = list("blank")))
                      
@@ -50,29 +50,26 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                        , justified = TRUE, status = "primary",
                        checkIcon = list(yes = icon("ok", lib = "glyphicon"))
                      )
-                     )
+                     , fluidPage(width = sidebar_width, style="white-space: normal;",p("Margins (inches):"))
+                     , fluidRow(
+                       column(3,numericInput("top_margin","Top",.25,min = 0,max=5))
+                     , column(3,numericInput("right_margin","Right",.25,min = 0,max=5))
+                     , column(3,numericInput("bottom_margin","Bottom",.25,min = 0,max=5))
+                     , column(3,numericInput("left_margin","Left",.25,min = 0,max=5))
+                     ))
           , menuItem("Colors",icon = icon("paint-brush")
-                     # , textInput('head_text_color',"Text for column letters:"
-                     #             , value = "black")
-                     # , textInput('tile_text_color',"Text for tiles:"
-                     #             , value = "black")
-                     # , textInput('panel_color',"Board Background:"
-                     #             , value = "white")
-                     # , textInput('tile_color',"Tile Background:"
-                     #             , value = "white") 
-                     # , textInput('tile_lines',"Tile Outlines:"
-                     #             , value = "black")
                      , colourInput("head_text_color", "Text for column letters:", "black")
                      , colourInput("tile_text_color", "Text for tiles:", "black")
                      , colourInput("panel_color", "Board Background:", "white")
+                     , colourInput("panel_outline", "Board Outline:", "black")
                      , colourInput("tile_color", "Tile Background:", "white")
                      , colourInput("tile_lines", "Tile Outlines:", "black")
                      )
          , menuItem("Font",icon = icon("font")
-                    , sliderInput("head_text_size","Column letter Size",1,44,14
-                                  ,step = .5,width = "100%")
-                    , sliderInput("tile_text_size","Tile letter Size",1,12,5
-                                  ,step = .5,width = "100%")
+                    , sliderInput("head_text_size","Column letter Size",1,125,40
+                                  ,step = 1,width = "100%")
+                    , sliderInput("tile_text_size","Tile letter Size",1,35,14
+                                  ,step = 1,width = "100%")
                     , selectInput("font","Choose a Font:",choices = "Coming Soon!")
          )
           , menuItem("About",icon = icon("question")
@@ -87,22 +84,6 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
           ))
             ,br()
             ,br()
-         # , img(src="headshot.jpg",id="face-img",align="center")
-         # icon("user fa-3x")
-         # , div(
-         #   a(href="https://ncpollock.github.io/"
-         #     ,target="_blank"
-         #     , img(src="headshot.jpg",id="face-img",align="left"))
-         #   # icon("user fa-pull-right fa-3x") # generic user icon instead of my face
-         #   , strong("Developed by: "),
-         #   br(),
-         #   a(href="https://ncpollock.github.io/"
-         #     ,target="_blank"
-         #     ,"Noah C. Pollock"),br()
-         #  , a(href = "https://github.com/ncpollock/bingo"
-         #        ,target="_blank"
-         #        ,"Code on GitHub")
-         #   ,style = "float:center;padding-left:15px;white-space:nowrap;")
             , p(img(src="headshot.jpg",id="face-img",align="center"),br(),
                strong("Developed by: "),
                br(),
@@ -121,8 +102,8 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto:300italic,400,700")
         )
-        , style="font-family: 'Roboto';",
-        tags$head(tags$style(custom_colors))
+        , style="font-family: 'Roboto';"
+        , tags$head(tags$style(custom_colors))
         , fluidRow(
           box(title = title_collapse("Quick Preview"), solidHeader = TRUE, width = 12, status = 'primary', collapsible = TRUE
               , p("Note that this preview version is fast, but it's likely distorted. Generate an actual PDF
@@ -134,11 +115,6 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
         , p("Note that this only generates two bingo boards to preview how the actual PDF download will look.")
         , uiOutput("pdf_preview")
           #           infoBoxOutput('file_rows'),
-          #           box(solidHeader = TRUE,width=12,title = "Preview Data",status = "success",
-          #               dataTableOutput("full_dataset")))),
-          
-
-
         )
 )
 )
