@@ -70,7 +70,8 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                                   ,step = 1,width = "100%")
                     , sliderInput("tile_text_size","Tile letter Size",1,35,14
                                   ,step = 1,width = "100%")
-                    , selectInput("font","Choose a Font:",choices = "Coming Soon!")
+                    , selectInput("font","Choose a Font:"
+                                  , choices = c("serif","Bonbon-Regular","Butcherman-Regular","ButterflyKids-Regular"))
          )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"

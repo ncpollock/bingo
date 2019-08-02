@@ -139,7 +139,7 @@ shinyServer(function(input, output, clientData, session) {
           , size = input$head_text_size/ggplot2:::.pt) +
         scale_y_continuous(limits = c(0,6.2)) +
         theme(panel.background = element_rect(fill=input$panel_color,color = input$panel_color)
-              , text = element_text(family = plot_font)
+              , text = element_text(family = input$font)
               , panel.grid = element_blank()
               , axis.text = element_blank()
               , axis.title = element_blank()
@@ -204,7 +204,7 @@ shinyServer(function(input, output, clientData, session) {
             , size = input$head_text_size/ggplot2:::.pt) +
           scale_y_continuous(limits = c(0,6.2)) +
           theme(panel.background = element_rect(fill=input$panel_color, color = input$panel_color)
-                , text = element_text(family = plot_font)
+                , text = element_text(family = input$font)
                 , panel.grid = element_blank()
                 , axis.text = element_blank()
                 , axis.title = element_blank()
