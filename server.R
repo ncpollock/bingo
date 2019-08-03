@@ -66,7 +66,6 @@ shinyServer(function(input, output, clientData, session) {
     filename = "bingo.pdf",
     content = function(file) {
       withProgress(message = 'Creating Bingo Boards', value = 0, {
-        
         if(input$page_layout==TRUE){
         ggsave("www/bingo.pdf"
                , gridExtra::marrangeGrob(grobs = plot_list(), nrow=as.numeric(input$boards_per_page), ncol=1,top = NULL))
@@ -76,7 +75,6 @@ shinyServer(function(input, output, clientData, session) {
                ,width=11, height=8.5)
         } # else
       }) # withProgress
-
       file.copy("www/bingo.pdf", file)
     }
   )
@@ -112,8 +110,9 @@ shinyServer(function(input, output, clientData, session) {
     #            color="blue")
     # })
   
+ 
     output$preview <- renderPlot(height = 500, {
-      
+
       validate(
         need(!is.null(bingo_df()), "You must upload a CSV file if you want to use a Custom List.")
       )
@@ -128,15 +127,19 @@ shinyServer(function(input, output, clientData, session) {
         plot_df <- plot_df %>%
           mutate(Tiles = ifelse(x==3 & y==3,NA,Tiles))
       }
-      
+
       temp_plot <- ggplot(plot_df, aes(x, y, width = w)) +
         geom_tile(color = input$tile_lines,fill=input$tile_color) +
-        geom_text(aes(label=Tiles), color = input$tile_text_color, size = input$tile_text_size/ggplot2:::.pt) +
+        geom_text(aes(label=Tiles)
+                  , color = input$tile_text_color
+                  , size = input$tile_text_size/ggplot2:::.pt
+                  , family = input$font) +
         geom_text(data = data.frame(
           head = unlist(strsplit(input$head_letters,"")),x=1:5,y=6,w=1)
           , aes(x=x,y=y,label=head)
           , color = input$head_text_color
-          , size = input$head_text_size/ggplot2:::.pt) +
+          , size = input$head_text_size/ggplot2:::.pt
+          , family = input$font) +
         scale_y_continuous(limits = c(0,6.2)) +
         theme(panel.background = element_rect(fill=input$panel_color,color = input$panel_color)
               , text = element_text(family = input$font)
@@ -151,6 +154,8 @@ shinyServer(function(input, output, clientData, session) {
                 , "in")
         )
       
+
+      
       # add free space shape/image if selected
       if(input$free_space=="Heart") {
         temp_plot <- temp_plot + 
@@ -159,6 +164,8 @@ shinyServer(function(input, output, clientData, session) {
       
       temp_plot
     })
+   
+    
     
     observeEvent(input$generate_pdf_preview, {
     output$pdf_preview <- renderUI({
@@ -196,15 +203,20 @@ shinyServer(function(input, output, clientData, session) {
         
         temp_plot <- ggplot(plot_df, aes(x, y, width = w)) +
           geom_tile(color = input$tile_lines,fill=input$tile_color) +
-          geom_text(aes(label=Tiles), color = input$tile_text_color, size = input$tile_text_size/ggplot2:::.pt) +
+          geom_text(aes(label=Tiles)
+                    , color = input$tile_text_color
+                    , size = input$tile_text_size/ggplot2:::.pt
+                    , family = input$font) +
           geom_text(data = data.frame(
             head = unlist(strsplit(input$head_letters,"")),x=1:5,y=6,w=1)
             , aes(x=x,y=y,label=head)
             , color = input$head_text_color
-            , size = input$head_text_size/ggplot2:::.pt) +
+            , size = input$head_text_size/ggplot2:::.pt
+            , family = input$font) +
           scale_y_continuous(limits = c(0,6.2)) +
           theme(panel.background = element_rect(fill=input$panel_color, color = input$panel_color)
                 , text = element_text(family = input$font)
+                # , text = element_text(family = 'Bonbon')
                 , panel.grid = element_blank()
                 , axis.text = element_blank()
                 , axis.title = element_blank()
