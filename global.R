@@ -2,7 +2,6 @@
 # letter validation on BINGO headers
 # customize fonts: https://stackoverflow.com/questions/55100069/ggplot-with-customized-font-not-showing-properly-on-shinyapps-io/55158772#55158772
 # 12 / (prod(75:71) / factorial(5))
-# color picker
 
 sidebar_width <- "450px"
 
@@ -34,6 +33,8 @@ library(grid)
 library(shinyWidgets)
 library(gridExtra)
 library(colourpicker)
+library(showtext) # use other fonts in ggplot2
+
 
 # create grids
 grid_df <- data.frame(
@@ -48,17 +49,17 @@ g <- rasterGrob(heart, interpolate=TRUE)
 
 tiles <- 25
 
-plot_font <- "Courier"
-
-if(Sys.info()[['sysname']] == "Linux"){
-  dir.create('~/.fonts')
-  file.copy("www/Bonbon-Regular.ttf", "~/.fonts")
-  file.copy("www/Butcherman-Regular.ttf", "~/.fonts")
-  file.copy("www/ButterflyKids-Regular.ttf", "~/.fonts")
-  system('fc-cache -f ~/.fonts')
-  
-  plot_font <- "Bonbon-Regular"
-}
+showtext_opts(dpi = 225)
+showtext_auto() # automatically spin up showtext for all graphics devices
+font_add_google("Lobster") # add lobster from Google!
+font_paths("www/") # tell showtext there are font files in www directory
+# make fonts available from www directory
+font_add("Bonbon","Bonbon-Regular.ttf")
+font_add("Butcherman","Butcherman-Regular.ttf")
+font_add("Butterfly Kids","ButterflyKids-Regular.ttf")
+font_add("Beth Ellen","BethEllen-Regular.ttf")
+font_add("Saira Stencil One","SairaStencilOne-Regular.ttf")
+font_add("Anton","Anton-Regular.ttf")
 
 # allow box collapse on title click
 title_collapse <- function(x){
