@@ -71,7 +71,11 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                     , sliderInput("tile_text_size","Tile letter Size",1,35,14
                                   ,step = 1,width = "100%")
                     , selectInput("font","Choose a Font:"
-                                  , choices = c("serif","Bonbon-Regular","Butcherman-Regular","ButterflyKids-Regular"))
+                                  , choices = list(
+                                    "Regular" = list("sans","serif","mono","Anton")
+                                    , "Fancy" = list("Lobster","Beth Ellen","Bonbon","Butterfly Kids")
+                                    , "Other" = list("Saira Stencil One","Butcherman")
+                                                ))
          )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"
@@ -83,6 +87,39 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                         For example, I am still working on an algorithm that would mitigate the potential 
                         for multiple wins at the same time.")
           ))
+         
+         , tags$label("for"="state", "Select a State", class="input-label"),
+         
+         # input
+         tags$select(id="state","onfocus"='this.size=13;', "onblur"='this.size=1;' ,
+                     "onchange"='this.size=1; this.blur();',width = "100%",
+                     
+                     # default
+                     tags$option(value = "none", ""),
+                     
+                     # east coast
+                     tags$optgroup("label" = "East Coast",
+                                   tags$option(value = "NY", "NY",style = "font-family: Lobster;"),
+                                   tags$option(value = "NJ", "NJ",style = "font-family: Bonbon;"),
+                                   tags$option(value = "CT", "CT")
+                     ),
+                     
+                     # west coast
+                     tags$optgroup("label" = "West Coast",
+                                   tags$option(value = "WA","WA"),
+                                   tags$option(value = "OR","OR"),
+                                   tags$option(value = "CA","CA")
+                     ),
+                     
+                     # midwest
+                     tags$optgroup("label" = "Midwest",
+                                   tags$option(value = "MN","MN"),
+                                   tags$option(value = "WI","WI"),
+                                   tags$option(value = "IA","IA")
+                     )
+         )
+         
+         
             ,br()
             ,br()
             , p(img(src="headshot.jpg",id="face-img",align="center"),br(),
@@ -107,8 +144,8 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
         , tags$head(tags$style(custom_colors))
         , fluidRow(
           box(title = title_collapse("Quick Preview"), solidHeader = TRUE, width = 12, status = 'primary', collapsible = TRUE
-              , p("Note that this preview version is fast, but it's likely distorted. Generate an actual PDF
-                  preview below when you have the formatting you want.")
+              , p("Note that this preview version is fast, but it's distorted. Generate actual PDF
+                  previews below when you have the formatting you want.")
               , plotOutput("preview", height = 500)
         ))
         , actionButton('generate_pdf_preview',"Generate Actual PDF Preview"
