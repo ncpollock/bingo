@@ -86,7 +86,7 @@ shinyServer(function(input, output, clientData, session) {
     insertUI(
       selector = "#file_upload_placeholder",
       where = "beforeBegin",
-      ui = div(id = "custom_list_container"
+      ui = div(id = "custom_list_container",style = "background-color: green;"
                , fileInput("custom_list", "Upload your own CSV file:",
                      multiple = FALSE,
                      accept = c("text/csv",
