@@ -34,6 +34,7 @@ library(shinyWidgets)
 library(gridExtra)
 library(colourpicker)
 library(showtext) # use other fonts in ggplot2
+library(curl) # required for showtext?
 
 
 # create grids
