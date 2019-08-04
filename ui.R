@@ -72,10 +72,11 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                                   ,step = 1,width = "100%")
                     , selectInput("font","Choose a Font:"
                                   , choices = list(
-                                    "Regular" = list("sans","serif","mono","Anton")
+                                    "Standard" = list("Arial" = "sans","Times New Roman" = "serif","Courier New" = "mono","Anton")
                                     , "Fancy" = list("Lobster","Beth Ellen","Bonbon","Butterfly Kids")
                                     , "Other" = list("Saira Stencil One","Butcherman")
                                                 ))
+                    
          )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"
@@ -87,39 +88,6 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                         For example, I am still working on an algorithm that would mitigate the potential 
                         for multiple wins at the same time.")
           ))
-         
-         , tags$label("for"="state", "Select a State", class="input-label"),
-         
-         # input
-         tags$select(id="state","onfocus"='this.size=13;', "onblur"='this.size=1;' ,
-                     "onchange"='this.size=1; this.blur();',width = "100%",
-                     
-                     # default
-                     tags$option(value = "none", ""),
-                     
-                     # east coast
-                     tags$optgroup("label" = "East Coast",
-                                   tags$option(value = "NY", "NY",style = "font-family: Lobster;"),
-                                   tags$option(value = "NJ", "NJ",style = "font-family: Bonbon;"),
-                                   tags$option(value = "CT", "CT")
-                     ),
-                     
-                     # west coast
-                     tags$optgroup("label" = "West Coast",
-                                   tags$option(value = "WA","WA"),
-                                   tags$option(value = "OR","OR"),
-                                   tags$option(value = "CA","CA")
-                     ),
-                     
-                     # midwest
-                     tags$optgroup("label" = "Midwest",
-                                   tags$option(value = "MN","MN"),
-                                   tags$option(value = "WI","WI"),
-                                   tags$option(value = "IA","IA")
-                     )
-         )
-         
-         
             ,br()
             ,br()
             , p(img(src="headshot.jpg",id="face-img",align="center"),br(),
@@ -138,7 +106,7 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
     
     body <- dashboardBody(
         tags$head(
-            tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto:300italic,400,700")
+            tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Lobster")
         )
         , style="font-family: 'Roboto';"
         , tags$head(tags$style(custom_colors))
