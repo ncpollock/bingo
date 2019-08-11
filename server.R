@@ -92,6 +92,9 @@ shinyServer(function(input, output, clientData, session) {
                      accept = c("text/csv",
                                 "text/comma-separated-values,text/plain",
                                 ".csv"))
+               , fluidPage(width = sidebar_width, style="white-space: normal;"
+                  , p("The file should contain one column where the first row is a header / column title. 
+                   Microsoft Excel can 'Save As' a CSV."))
       )
     )
     } else {
