@@ -52,7 +52,9 @@ tiles <- 25
 
 showtext_opts(dpi = 225)
 showtext_auto() # automatically spin up showtext for all graphics devices
-font_add_google("Lobster") # add lobster from Google!
+font_add_google("Lobster") # add Lobster from Google!
+font_add_google("Bilbo")
+
 font_paths("www/") # tell showtext there are font files in www directory
 # make fonts available from www directory
 font_add("Bonbon","Bonbon-Regular.ttf")
@@ -61,6 +63,19 @@ font_add("Butterfly Kids","ButterflyKids-Regular.ttf")
 font_add("Beth Ellen","BethEllen-Regular.ttf")
 font_add("Saira Stencil One","SairaStencilOne-Regular.ttf")
 font_add("Anton","Anton-Regular.ttf")
+
+# install fonts on shinyapps.io Linux servers
+  # only needed for .css file to pickup and use for font preview in selectinput
+if(Sys.info()[['sysname']] == "Linux"){
+  dir.create('~/.fonts')
+  file.copy("www/Bonbon-Regular.ttf", "~/.fonts")
+  file.copy("www/Butcherman-Regular.ttf", "~/.fonts")
+  file.copy("www/ButterflyKids-Regular.ttf", "~/.fonts")
+  file.copy("www/Anton-Regular.ttf", "~/.fonts")
+  file.copy("www/BethEllen-Regular.ttf", "~/.fonts")
+  file.copy("www/SairaStencilOne-Regular.ttf", "~/.fonts")
+  system('fc-cache -f ~/.fonts')
+}
 
 # allow box collapse on title click
 title_collapse <- function(x){
