@@ -240,9 +240,9 @@ start - Sys.time()
 
 # create grids
 grid_df <- data.frame(
-  x = rep(1:5, 5),
-  y = rep(1:5, each = 5),
-  w = 0
+  x = rep(1:5, 5), # horizontal
+  y = rep(1:5, each = 5), # vertical
+  w = 0 # tile width, unnecessary here
 )
 
 # identify diagonal groups
@@ -250,10 +250,11 @@ grid_df$diag <- NA
 grid_df$diag[c(1,7,19,25)] <- "TLBR"
 grid_df$diag[c(5,9,17,21)] <- "BLTR"
 
-simulations <- 100 # how many simulations / games
-boards <- 50 # how many boards per simulation / players
+simulations <- 1000 # how many simulations / games
+boards <- 20 # how many boards per simulation / players
 n_prizes <- 6 # how many prizes available per game?
-bingo_df <- data.frame(Tile = 1:75)
+n_tiles <- 90 # how many items to be included selected from?
+bingo_df <- data.frame(Tile = 1:n_tiles)
 board_df <- grid_df
 
 # init df for storing winning calls across players and simulations
@@ -263,54 +264,61 @@ win_df <- data.frame(
   , winning_call = NA 
   , stringsAsFactors = FALSE
 )
+
 start <- Sys.time()
 #for each simulated game
 for(game in 1:simulations){
   
-  # identify the actual order that bingo tiles will be called
+  # identify the actual order that bingo tiles will be called for this simulation
   call_df <- data.frame(Tile = sample(bingo_df$Tile,nrow(bingo_df))
                         , order = 1:nrow(bingo_df)
                         , stringsAsFactors = FALSE)
   
-#clear board
-board_df <- grid_df
-board_df <- do.call(rbind,lapply(1:boards,function(x){data.frame(grid_df,player=x,Tile = sample(bingo_df$Tile,25))}))
-board_df$Tile[seq(13,nrow(board_df),25)] <- NA # clear free spaces
-# join player board with Tile call order
-board_df <- board_df %>%
-  inner_join(call_df,by="Tile")
+  #clear board
+  board_df <- grid_df
+  # init a board for every player within simulation
+  board_df <- do.call(rbind,lapply(1:boards,function(x){data.frame(grid_df,player=x,Tile = sample(bingo_df$Tile,25))}))
+  board_df$Tile[seq(13,nrow(board_df),25)] <- NA # clear free spaces
+  # join player boards with Tile call order
+  # maybe this does need to be a left join because items will be called that no-one has a win for...
+    # or rather a right join...
+  board_df <- board_df %>%
+    inner_join(call_df,by="Tile")
 
-# identify the call that results in a win
-# benchmark selecting just win_call before binding rows
-# this is probably the call that takes the longest
-win_df <- win_df %>%
-  bind_rows(
-  bind_rows(
-  board_df %>%
-    group_by(player,x) %>%
-    summarise(win_call = max(order))
-  , board_df %>%
-    group_by(player,y) %>%
-    summarise(win_call = max(order))
-  , board_df %>%
-    filter(!is.na(diag)) %>% 
-    group_by(player,diag) %>%
-    summarise(win_call = max(order))
-) %>%
-  group_by(player) %>%
-  summarise(simulation = game
-            , winning_call = min(win_call))
-)
+  # identify the call that results in a win
+  # benchmark selecting just win_call before binding rows
+  # this is probably the call that takes the longest
+  win_df <- win_df %>%
+    bind_rows( # bind last simulation wins to current simulation wins
+    bind_rows(
+      board_df %>% # find last call for each horizontal win
+        group_by(player,x) %>%
+        summarise(win_call = max(order))
+      , board_df %>% # find last call for each vertical win
+        group_by(player,y) %>%
+        summarise(win_call = max(order))
+      , board_df %>% # find last call for each diagonal win
+        filter(!is.na(diag)) %>%
+        group_by(player,diag) %>%
+        summarise(win_call = max(order))
+    ) %>%
+    group_by(player) %>% # find first win for each player
+    summarise(simulation = game
+              , winning_call = min(win_call))
+  )
+  
+} # simulation
 
-} # simulations
 
 start - Sys.time()
 
+# get rid of init row
+win_df <- win_df %>%
+  slice(-1) %>% 
+  arrange(winning_call)
+
 ##########################################
 
-win_df <- win_df %>%
-  slice(-1) %>% # get rid of init row
-  arrange(winning_call)
 
 # plot odds of winning at certain call
 win_df %>% 
@@ -335,15 +343,160 @@ ggplot(
   geom_line()
 
 # calculate odds of awarding all prizes
-win_df %>%
+compare_n_prizes_df <- win_df %>%
   group_by(simulation) %>%
   arrange(winning_call) %>%
-  slice(n_prizes) %>% # select last call ie call that wins last prize
-  ungroup() %>%
+  slice(1:n_prizes) %>% # select last call ie call that wins last prize
+  mutate(prize_ind = 1:n()) %>%
+  group_by(prize_ind) %>%
   count(winning_call) %>%
   mutate(prob = n/sum(n)
          , cum_prob = cumsum(prob))
 
+ggplot(
+  compare_n_prizes_df
+  , aes(x=winning_call,y=cum_prob
+        ,color = cut(prize_ind, breaks=0:n_prizes, labels=1:n_prizes)
+        ,group = prize_ind)
+) +
+  geom_line(size=3) +
+  scale_color_manual(drop=FALSE, values=colorRampPalette(c("yellow","red"))(n_prizes)
+                     , na.value="#EEEEEE", name="Prizes")
+  
+
+# TEST 3 #########################################
+
+# create grids
+grid_df <- data.frame(
+  x = rep(1:5, 5), # horizontal
+  y = rep(1:5, each = 5), # vertical
+  w = 0 # tile width, unnecessary here
+)
+
+# identify diagonal groups
+grid_df$diag <- NA
+grid_df$diag[c(1,7,19,25)] <- "TLBR"
+grid_df$diag[c(5,9,17,21)] <- "BLTR"
+
+simulations <- 1000 # how many simulations / simulated games
+boards <- 55 # how many boards per simulation, you could give each player two boards, or allow players to win more boards
+n_prizes <- 6 # how many prizes available per game?
+n_tiles <- 90 # how many items to be selected from? # n_tile_options might be a more fitting name
+tiles <- 1:n_tiles
+board_size <- nrow(grid_df)
+board_df <- grid_df
+
+
+start <- Sys.time()
+#for each simulated game
+
+# identify the actual order that bingo tiles will be called for this simulation
+call_df <- do.call(rbind,lapply(1:simulations,function(x){
+  data.frame(simulation = x
+             , Tile = sample(tiles,n_tiles)
+             , order = 1:n_tiles
+             , stringsAsFactors = FALSE)
+}))
+
+#clear board
+# board_df <- grid_df
+# init a board for every player within simulation
+board_df <- data.frame(grid_df
+             , simulation = rep(1:simulations,each = boards*board_size)
+             , player = rep(1:boards, each = board_size)
+             # complex because I need to avoid duplicate numbers within a board
+             , Tile = unlist(lapply(1:boards
+                                    , function(x) sample(tiles,board_size)
+                                    ))
+             )
+
+# faster than logic based eg when x = 3 and y = 3 then clear
+board_df$Tile[seq(13,nrow(board_df),25)] <- NA # clear free spaces
+# join player boards with Tile call order for each simulation
+board_df <- board_df %>%
+  inner_join(call_df,by=c("Tile","simulation"))
+
+# identify the call that results in a win for each player for each simulation
+# NEED TO ONLY DO THIS WHEN THEY HAVE FIVE CALLED! (or 4 diag) 
+win_df <- bind_rows(
+    board_df %>% # find last call for each horizontal win
+      group_by(simulation,player,x) %>%
+      summarise(win_call = max(order)
+                , called = n()) 
+    , board_df %>% # find last call for each vertical win
+      group_by(simulation,player,y) %>%
+      summarise(win_call = max(order)
+                , called = n())
+    , board_df %>% # find last call for each diagonal win
+      filter(!is.na(diag)) %>%
+      group_by(simulation,player,diag) %>%
+      summarise(win_call = max(order)
+                , called = n() + 1) # plus one because 3x3 is both TLBR and BRTL
+  ) %>%
+  filter(called == 5) %>%
+  group_by(simulation,player) %>% # find first win for each player for each simulation
+  summarise(winning_call = min(win_call)) %>%
+  ungroup()
+
+
+start - Sys.time()
+
+# calculate odds of awarding all prizes
+compare_n_prizes_df <- win_df %>%
+  group_by(simulation) %>%
+  arrange(winning_call) %>%
+  slice(1:n_prizes) %>% # select last call ie call that wins last prize
+  mutate(prize_ind = 1:n()) %>%
+  group_by(prize_ind) %>%
+  count(winning_call) %>%
+  mutate(prob = n/simulations
+         , sims = simulations
+         , count = sum(n)
+         , cum_prob = cumsum(prob))
+
+ggplot(
+  compare_n_prizes_df
+  , aes(x=winning_call,y=cum_prob
+        ,color = cut(prize_ind, breaks=0:n_prizes, labels=1:n_prizes)
+        ,group = prize_ind)
+) +
+  geom_line(size=3) +
+  scale_color_manual(drop=FALSE, values=colorRampPalette(c("yellow","red"))(n_prizes)
+                     , na.value="#EEEEEE", name="Prizes")
+
+##########################################
+
+
+
+
+
 # I want to report on:
   # how many rounds until game is over (all prizes are awarded)
   # 
+
+
+
+# SANDBOX #############
+# 
+# all_board_df <- all_board_df %>%
+#   bind_rows(
+#     board_df %>% 
+#       gather("x","y","diag",key="tile_type",value="tile_index")
+#   )
+# 
+# 
+# win_df <- bind_rows(
+#   all_board_df %>% # find last call for each horizontal win
+#     group_by(game,player,x) %>%
+#     summarise(win_call = max(order))
+#   , all_board_df %>% # find last call for each vertical win
+#     group_by(game,player,y) %>%
+#     summarise(win_call = max(order))
+#   , all_board_df %>% # find last call for each diagonal win
+#     filter(!is.na(diag)) %>% 
+#     group_by(game,player,diag) %>%
+#     summarise(win_call = max(order))
+# ) %>%
+#   group_by(game,player) %>% # find first win for each player
+#   summarise(simulation = game
+#             , winning_call = min(win_call))
