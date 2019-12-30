@@ -79,6 +79,14 @@ shinyServer(function(input, output, clientData, session) {
     }
   )
   
+  output$download_items <- downloadHandler(
+    filename = "bingo_item_list.csv",
+    content = function(file) {
+      write.csv(bingo_df(),"www/bingo_item_list.csv",row.names = FALSE,na = "")
+      file.copy("www/bingo_item_list.csv", file)
+    }
+  )
+  
   # if custom list is selected, show a file upload option.
   observeEvent(input$theme, {
     
@@ -112,6 +120,14 @@ shinyServer(function(input, output, clientData, session) {
     #            icon=icon("align-justify"),
     #            color="blue")
     # })
+  
+  output$item_list_length <- renderText({
+    tdata <- ifelse(is.null(bingo_df()),0,nrow(bingo_df()))
+    paste("The total number of items sampled from:",tdata)
+    })
+  output$number_of_boards <- renderText({
+    paste("Bingo Boards:",input$boards)
+  })
   
  
     output$preview <- renderPlot(height = 500, {
@@ -239,6 +255,7 @@ shinyServer(function(input, output, clientData, session) {
         plot_list[[i]] <- temp_plot
         
       }
+      
       plot_list
     })
     
