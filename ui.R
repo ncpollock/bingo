@@ -24,6 +24,9 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                                    c("Wedding","Star Wars","Numbers","Upload Custom List"),
                                    selected = "Wedding")
                      , a(id="file_upload_placeholder")
+                     , br()
+                     , div(downloadButton("download_items","See Full List"
+                                          , class = "my_button"), style = "padding-left:17px;")
                      # create modal window and update to validate 5 letters?
                      , textInput('head_letters',"Choose five letters to be columns:"
                                  , value = "BINGO")
@@ -32,7 +35,6 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                                      "Text" = list("FREE","Free","X","*")
                                      , "Shape" = list("Heart")
                                      , "Other" = list("blank")))
-                     
                      )
           , menuItem("Iron Out the Details",icon = icon("gear")
                      , sliderInput("boards","How many game boards do you need?",2,150,10,width="100%")
@@ -73,14 +75,18 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                     , selectInput("font","Choose a Font:"
                                   , choices = list(
                                     "Standard" = list("Arial" = "sans","Times New Roman" = "serif","Courier New" = "mono","Anton")
-                                    , "Fancy" = list("Lobster","Beth Ellen","Bonbon","Butterfly Kids")
+                                    , "Fancy" = list("Lobster","Beth Ellen","Bilbo","Bonbon","Butterfly Kids")
                                     , "Other" = list("Saira Stencil One","Butcherman")
                                                 ))
                     
          )
+         # , menuItem("Summary",icon = icon("map-signs")
+         #            , textOutput("item_list_length")
+         #            , textOutput("number_of_boards")
+         # )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"
-                    , p("In May 2019, my sister-in-law mentioned she was going to play Bingo at her wedding shower.
+                    , p("In May 2019, my sister-in-law was going to play Bingo at her wedding shower.
                      As she thought about creating the boards herself or looking for a tool online I jumped
                      at the idea to build it myself in R. Impractical, perhaps, but it was a lot of fun!
                         It took me less time than expected to create a halfway decent board, so I decided to
@@ -106,7 +112,7 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
     
     body <- dashboardBody(
         tags$head(
-            tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Lobster")
+            tags$link(rel = "stylesheet", type = "text/css", href = "https://fonts.googleapis.com/css?family=Roboto")
         )
         , style="font-family: 'Roboto';"
         , tags$head(tags$style(custom_colors))
