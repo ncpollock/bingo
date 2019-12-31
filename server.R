@@ -39,7 +39,10 @@ shinyServer(function(input, output, clientData, session) {
                           stringsAsFactors = FALSE,
                           na.strings = c("","NA","N/A"," ")
                           #,header = input$header, sep = input$sep, quote = input$quote
-      )
+      ) %>%
+        # only keep up to 100 as the game would be incredibly long 
+          # and the simulation would likely crash
+        slice(1:100) 
       
       }
     
@@ -48,7 +51,8 @@ shinyServer(function(input, output, clientData, session) {
     )
     
     validate(
-      need(is.data.frame(bingo_df), "You must upload a CSV file if you want to use a Custom List.")
+      need(is.data.frame(bingo_df)
+           , "You must upload a CSV file if you want to use a Custom List.")
     )
     
     # rename first column to 'tiles'
@@ -102,7 +106,9 @@ shinyServer(function(input, output, clientData, session) {
                                 ".csv"))
                , fluidPage(width = sidebar_width, style="white-space: normal;"
                   , p("The file should contain one column where the first row is a header / column title. 
-                   Microsoft Excel can 'Save As' a CSV."))
+                   Microsoft Excel can 'Save As' a CSV."
+                      , "Note: only up to the first 100 items/rows will be used. 
+                      In the USA, Bingo typically has 75 items."))
       )
     )
     } else {
@@ -257,6 +263,214 @@ shinyServer(function(input, output, clientData, session) {
       }
       
       plot_list
+    })
+    
+    
+    win_df <- reactive({
+      # identify diagonal groups
+      grid_df$diag <- NA
+      grid_df$diag[c(1,7,19,25)] <- "TLBR"
+      grid_df$diag[c(5,9,17,21)] <- "BLTR"
+      
+      boards <- input$boards # how many boards per simulation, you could give each player two boards, or allow players to win more boards
+      n_prizes <- input$prizes # how many prizes available per game?
+      n_tiles <- nrow(bingo_df()) # how many items to be selected from? # n_tile_options might be a more fitting name
+      tiles <- 1:n_tiles
+      board_size <- nrow(grid_df)
+      board_df <- grid_df
+      
+      
+      # identify the actual order that bingo tiles will be called for this simulation
+      call_df <- do.call(rbind,lapply(1:simulations,function(x){
+        data.frame(simulation = x
+                   , Tile = sample(tiles,n_tiles)
+                   , order = 1:n_tiles
+                   , stringsAsFactors = FALSE)
+      }))
+      
+      #clear board
+      # board_df <- grid_df
+      # init a board for every player within simulation
+      board_df <- data.frame(grid_df
+                             , simulation = rep(1:simulations,each = boards*board_size)
+                             , player = rep(1:boards, each = board_size)
+                             # complex because I need to avoid duplicate numbers within a board
+                             , Tile = unlist(lapply(1:boards
+                                                    , function(x) sample(tiles,board_size)
+                             ))
+      )
+      
+      # faster than logic based eg when x = 3 and y = 3 then clear
+      board_df$Tile[seq(13,nrow(board_df),25)] <- NA # clear free spaces
+      # join player boards with Tile call order for each simulation
+      board_df <- board_df %>%
+        inner_join(call_df,by=c("Tile","simulation"))
+      
+      # identify the call that results in a win for each player for each simulation
+      win_df <- bind_rows(
+        board_df %>% # find last call for each horizontal win
+          group_by(simulation,player,x) %>%
+          summarise(win_call = max(order)
+                    , called = n()) 
+        , board_df %>% # find last call for each vertical win
+          group_by(simulation,player,y) %>%
+          summarise(win_call = max(order)
+                    , called = n())
+        , board_df %>% # find last call for each diagonal win
+          filter(!is.na(diag)) %>%
+          group_by(simulation,player,diag) %>%
+          summarise(win_call = max(order)
+                    , called = n() + 1) # plus one because 3x3 is both TLBR and BRTL
+      ) %>%
+        filter(called == 5) %>%
+        group_by(simulation,player) %>% # find first win for each player for each simulation
+        summarise(winning_call = min(win_call)) %>%
+        ungroup() %>%
+        group_by(simulation) %>%
+        arrange(winning_call) %>%
+        slice(1:n_prizes) %>% # select last call that wins each n prize per simulation
+        mutate(prize_ind = 1:n())
+      
+      win_df
+    })
+    
+    output$avg_calls_to_win <- renderPlot({
+      
+      boards <- input$boards # how many boards per simulation, you could give each player two boards, or allow players to win more boards
+      n_prizes <- input$prizes # how many prizes available per game?
+      n_tiles <- nrow(bingo_df()) # how many items to be selected from? # n_tile_options might be a more fitting name
+      tiles <- 1:n_tiles
+      board_size <- nrow(grid_df)
+      
+      pdata <- win_df() %>%
+        group_by(prize_ind) %>%
+        summarize(avg_call = round(mean(winning_call),1)
+                  , sd_call = round(sd(winning_call),1)
+                  , low = avg_call-sd_call
+                  , hi = avg_call+sd_call)
+      
+      if(max(pdata$hi) > 50){
+        call_breaks <- seq(0,max(pdata$hi),10)
+      } else {
+        call_breaks <- seq(0,max(pdata$hi),5)
+      }
+      
+      ggplot(pdata
+        , aes(y=avg_call, x=prize_ind)) +
+        geom_col() +
+        geom_errorbar(aes(ymin=low,ymax=hi),width = 0.5) +
+        scale_x_continuous(breaks=1:n_prizes) +
+        scale_y_continuous(breaks=call_breaks) +
+        geom_text(aes(label = avg_call),y = -5) +
+        geom_text(aes(label = sd_call),y = -10) +
+        annotate(geom="text", x=.5, y=-5, label="Avg:", colour="black",fontface="bold") +
+        annotate(geom="text", x=.5, y=-10, label="SD:", colour="black",fontface="bold") +
+        labs(title = "Figure 1. Average Items Called Before Winning x Prizes",
+             x="Prizes",
+             y="Items Called",
+             fill = "Prizes") + 
+        ggplot_theme
+      
+    })
+    
+    output$med_calls_to_win <- renderPlot({
+      
+      boards <- input$boards # how many boards per simulation, you could give each player two boards, or allow players to win more boards
+      n_prizes <- input$prizes # how many prizes available per game?
+      n_tiles <- nrow(bingo_df()) # how many items to be selected from? # n_tile_options might be a more fitting name
+      tiles <- 1:n_tiles
+      board_size <- nrow(grid_df)
+      
+      if(max(win_df()$winning_call) > 50){
+        call_breaks <- seq(0,max(win_df()$winning_call),10)
+      } else {
+        call_breaks <- seq(0,max(win_df()$winning_call),5)
+      }
+      
+      ggplot(
+        win_df()
+        , aes(y=winning_call, x=prize_ind
+              ,fill = cut(prize_ind, breaks=0:n_prizes, labels=1:n_prizes)
+              ,group = prize_ind)
+      ) +
+        geom_boxplot() +
+        scale_fill_manual(drop=FALSE, values=colorRampPalette(c("yellow","red"))(n_prizes)
+                           , na.value="#EEEEEE") +
+        scale_x_continuous(breaks=1:n_prizes) +
+        scale_y_continuous(breaks=call_breaks) +
+        labs(title = "Figure 2. Distribution of Items Called Before Winning x Prizes",
+             x="Prizes",
+             y="Items Called",
+             fill = "Prizes") + 
+        ggplot_theme +
+        theme(legend.position = "none")
+    })
+    
+    output$pct_sims_winning_call <- renderPlot({
+      
+      boards <- input$boards # how many boards per simulation, you could give each player two boards, or allow players to win more boards
+      n_prizes <- input$prizes # how many prizes available per game?
+      n_tiles <- nrow(bingo_df()) # how many items to be selected from? # n_tile_options might be a more fitting name
+      tiles <- 1:n_tiles
+      board_size <- nrow(grid_df)
+      
+      if(n_tiles>50){
+        call_breaks <- seq(0,n_tiles,10)
+      } else {
+        call_breaks <- seq(0,n_tiles,5)
+      }
+      
+      ggplot(
+        win_df() %>%
+          group_by(prize_ind) %>%
+          count(winning_call) %>%
+          mutate(cum_prob = cumsum(n/simulations))
+        , aes(x=winning_call,y=cum_prob
+              ,color = cut(prize_ind, breaks=0:n_prizes, labels=1:n_prizes)
+              ,group = prize_ind)
+      ) +
+        geom_line(size=2) +
+        geom_point(size=3) +
+        scale_color_manual(drop=FALSE, values=colorRampPalette(c("yellow","red"))(n_prizes)
+                           , na.value="#EEEEEE") +
+        labs(title = "Figure 3. Cumulative Probability of n Prizes Won by Items Called",
+             x="Items Called",
+             y="% of Simulations",
+             color = "Prizes") + 
+        scale_y_continuous(breaks=seq(0,1,0.1),limits = 0:1,labels=scales::percent) +
+        scale_x_continuous(breaks=call_breaks) +
+        ggplot_theme +
+        theme(panel.grid.major.x = element_line(color="gray"))
+    })
+    
+    # show simulations on button click
+    observeEvent(input$run_simulation, {
+      showModal(modalDialog(
+        title = "Simulate Bingo Games"
+        , fluidPage(fluidRow(infoBox("Simulations",1000,icon = icon("list"),width = 6,fill = TRUE,color="navy")
+          , infoBox("Boards Per Simulation",input$boards,icon = icon("th"),width = 6,fill = TRUE,color="navy")
+          , infoBox("Prizes",input$prizes,icon = icon("trophy"),width = 6,fill = TRUE,color="navy")
+          , infoBox("Possible Tiles",nrow(bingo_df()),icon = icon("sitemap"),width = 6,fill = TRUE,color="navy"))
+        )
+        , size = "l"
+        , easyClose = TRUE
+        , hr(class = "sepline")
+        , plotOutput("avg_calls_to_win")
+        , p("This chart demonstrates the average number of items called 
+            until a player wins the first prize, the second prize, or the nth prize.")
+        , hr(class = "sepline")
+        , plotOutput("med_calls_to_win")
+        , p("This chart demonstrates a more detailed view of the data than 
+            Figure 1 as averages often oversimplify a group of data. 
+            Figure 2 shows the distribution of items called until a player
+            wins the first prize, second prize, or nth prize.")
+        , hr(class = "sepline")
+        , plotOutput("pct_sims_winning_call")
+        , p("Figure 3 demonstrates the percent of simulations that yield a first win, second win, or nth win by the number of items called. 
+            For example, it allows you to make statements such as 50% of all simulations yielded a win by x item called 
+            or that 90% of simulations had all prizes awarded by x item called.")
+        , footer = modalButton("Close Simulation")
+      ))
     })
     
     

@@ -1,7 +1,7 @@
 
 # letter validation on BINGO headers
-# customize fonts: https://stackoverflow.com/questions/55100069/ggplot-with-customized-font-not-showing-properly-on-shinyapps-io/55158772#55158772
 # 12 / (prod(75:71) / factorial(5))
+# add number of items in list next to theme selector
 
 sidebar_width <- "450px"
 
@@ -24,8 +24,10 @@ cyan <- '#43c0f5'
 charcoal <- '#3d3d3d'
 
 library(shiny)
+library(shinyBS) # for tooltips
 library(shinydashboard)
 library(ggplot2)
+library(scales)
 library(dplyr)
 library(stringr)
 library(png) # for displaying heart image
@@ -39,9 +41,9 @@ library(curl) # required for showtext?
 
 # create grids
 grid_df <- data.frame(
-  x = rep(1:5, 5),
-  y = rep(1:5, each = 5),
-  w = 1
+  x = rep(1:5, 5), # horizontal tiles
+  y = rep(1:5, each = 5), # vertical tiles
+  w = 1 # tile width
 )
 
 # set special image(s) for free space
@@ -49,6 +51,8 @@ heart <- readPNG("www/heart.png")
 g <- rasterGrob(heart, interpolate=TRUE)
 
 tiles <- 25
+
+simulations <- 1000 # how many simulations / simulated games
 
 showtext_opts(dpi = 225)
 showtext_auto() # automatically spin up showtext for all graphics devices
@@ -85,6 +89,19 @@ title_collapse <- function(x){
            ,'</strong>'))
 }
 
+
+ggplot_theme <- theme(panel.background = element_blank(),
+                  axis.text = element_text(size = '15'),
+                  axis.title = element_text(size = '15'),
+                  plot.title = element_text(size = '18',face = 'bold',hjust = 0.5),
+                  axis.line = element_line(color = 'black'),
+                  strip.background = element_rect(fill = 'black'),
+                  strip.text = element_text(color = 'white',size = '18'),
+                  legend.position = "top",
+                  legend.text = element_text(size = '18'),
+                  panel.grid.major.y = element_line(color="gray"),
+                  panel.grid.major.x = element_blank()
+                  )
 
 # use custom color pallette across app
 custom_colors <- HTML(paste0('

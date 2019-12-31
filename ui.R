@@ -27,32 +27,35 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      , br()
                      , div(downloadButton("download_items","See Full List"
                                           , class = "my_button"), style = "padding-left:17px;")
+                     , bsTooltip(id = "download_items", placement = "right", trigger = "hover"
+                                 , title = "Download the full list of items used in the selected theme. You could use this list as a starting point to craft and upload your own!" 
+                                 )
                      # create modal window and update to validate 5 letters?
                      , textInput('head_letters',"Choose five letters to be columns:"
                                  , value = "BINGO")
                      , selectInput("free_space","What do you want in the free space?:"
                                    , choices = list(
                                      "Text" = list("FREE","Free","X","*")
-                                     , "Shape" = list("Heart")
+                                     , "Shape" = list("Heart","☻","☺","♦")
                                      , "Other" = list("blank")))
                      )
           , menuItem("Iron Out the Details",icon = icon("gear")
-                     , sliderInput("boards","How many game boards do you need?",2,150,10,width="100%")
+                     , sliderInput("boards",p(icon("th")," How many game boards do you need?"),2,150,10,width="100%")
                      , radioGroupButtons(
-                       inputId = "boards_per_page", label = p(icon("columns"),"How many game boards do you want per page?"), 
+                       inputId = "boards_per_page", label = p(icon("columns")," How many game boards do you want per page?"), 
                        choiceNames = c("One","Two")
                        , choiceValues =  1:2,
                        justified = TRUE, status = "primary",
                        checkIcon = list(yes = icon("ok", lib = "glyphicon"))
                      )
                      , radioGroupButtons(
-                       inputId = "page_layout", label = p(icon("file-text"),"Page Layout: "), 
+                       inputId = "page_layout", label = p(icon("file-text")," Page Layout: "), 
                        choiceNames = c(HTML("Portrait: <i class='fa fa-file-pdf-o'></i>"),HTML("Landscape: <i class='fa fa-file-pdf-o fa-rotate-90'></i>"))
                        , choiceValues =  c(TRUE, FALSE)
                        , justified = TRUE, status = "primary",
                        checkIcon = list(yes = icon("ok", lib = "glyphicon"))
                      )
-                     , fluidPage(width = sidebar_width, style="white-space: normal;",p("Margins (inches):"))
+                     , fluidPage(width = sidebar_width, style="white-space: normal;",p(icon("arrows-alt")," Margins (inches):"))
                      , fluidRow(
                        column(3,numericInput("top_margin","Top",.25,min = 0,max=5))
                      , column(3,numericInput("right_margin","Right",.25,min = 0,max=5))
@@ -66,6 +69,7 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                      , colourInput("panel_outline", "Board Outline:", "black")
                      , colourInput("tile_color", "Tile Background:", "white")
                      , colourInput("tile_lines", "Tile Outlines:", "black")
+                     , br()
                      )
          , menuItem("Font",icon = icon("font")
                     , sliderInput("head_text_size","Column letter Size",1,125,40
@@ -84,6 +88,21 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
          #            , textOutput("item_list_length")
          #            , textOutput("number_of_boards")
          # )
+         , menuItem("Simulations",icon = icon("clock-o")
+                    , fluidPage(width = sidebar_width, style="white-space: normal;"
+                                , p("This is an advanced feature. One Thousand Bingo game simulations will run based
+                                    on all of your inputs (e.g., # of boards, # of items in your theme). 
+                                    Simulations may help you understand how many item calls
+                                    your game might take before a prize is award or all prizes are awarded. This is important 
+                                    because some games may be very short (e.g., when there are many boards, few items in your theme, and few prizes) 
+                                    while some games may be very long (e.g., few boards, many items, and many prizes)."))
+                    , sliderInput("prizes",p(icon("trophy")," How many prizes are you giving away?"),1,15,5,width="100%")
+                    , actionButton("run_simulation","Run Simulations"
+                                   , class = "my_button"
+                                   , icon = icon("list")),br()
+                    , bsTooltip(id = "run_simulation", placement = "right", trigger = "hover"
+                                , title = "Running simulations may take a minute or so.")
+         )
           , menuItem("About",icon = icon("question")
                      , fluidPage(width = sidebar_width, style="white-space: normal;"
                     , p("In May 2019, my sister-in-law was going to play Bingo at her wedding shower.
@@ -126,7 +145,6 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
                        ,icon = icon("file-pdf-o"), class = "my_button", width = "100%")
         , p("Note that this only generates two bingo boards to preview how the actual PDF download will look.")
         , uiOutput("pdf_preview")
-          #           infoBoxOutput('file_rows'),
         )
 )
 )
