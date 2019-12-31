@@ -11,6 +11,7 @@ shinyServer(function(input, output, clientData, session) {
   bingo_df <- reactive({
       
     wedding_theme <- read.csv("wedding.csv", stringsAsFactors = FALSE)
+    animal_theme <-  read.csv("animals.csv", stringsAsFactors = FALSE)
     starwars_theme <- starwars %>% 
       # keep most popular characters determined by film count
       mutate(film_count = unlist(lapply(films,length))) %>% 
@@ -22,6 +23,7 @@ shinyServer(function(input, output, clientData, session) {
         
         dataset_list <- list(
           "Wedding" = wedding_theme
+          , "Animal" = animal_theme
           , "Star Wars" = starwars_theme
           , "Numbers" = number_theme)
         
