@@ -1,0 +1,62 @@
+
+/* my face */
+#face-img {
+  border-radius: 70%;
+  border: 1px solid #ddd;
+  padding: 3px;
+  margin-left: 10px;
+  width:85px; /* you can use % */
+  height: auto;
+}  
+
+.my_button {
+  background-color: #fda302;
+  color: black !important;
+  font-weight: bold !important;
+}
+
+.my_button:hover {
+  background-color: rgb(254, 212, 139);
+}
+
+/* specifically for hr tag */
+.sepline {
+  border: 5px solid #333;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+/* see preview of fonts in font-picker */
+[data-value="mono"] {
+    font-family: 'Courier New';
+}
+[data-value="serif"] {
+    font-family: 'Times New Roman';
+}
+[data-value="sans"] {
+    font-family: Arial;
+}
+[data-value="Anton"] {
+    font-family: Anton;
+}
+[data-value="Lobster"] {
+    font-family: 'Lobster';
+}
+[data-value="Butcherman"] {
+    font-family: Butcherman;
+}
+[data-value="Bilbo"] {
+    font-family: Bilbo;
+}
+[data-value="Bonbon"] {
+    font-family: Bonbon;
+}
+[data-value="Butterfly Kids"] {
+    font-family: 'Butterfly Kids';
+}
+[data-value="Beth Ellen"] {
+    font-family: 'Beth Ellen';
+}
+[data-value="Saira Stencil One"] {
+    font-family: 'Saira Stencil One';
+}

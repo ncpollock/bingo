@@ -3,7 +3,5 @@
 .RData
 .Ruserdata
 *.pdf
-www/
 *.Rproj
-*.csv
 rsconnect/
