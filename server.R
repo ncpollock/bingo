@@ -12,6 +12,7 @@ shinyServer(function(input, output, clientData, session) {
       
     wedding_theme <- read.csv("wedding.csv", stringsAsFactors = FALSE)
     animal_theme <-  read.csv("animals.csv", stringsAsFactors = FALSE)
+    baby_theme <-  read.csv("baby.csv", stringsAsFactors = FALSE)
     starwars_theme <- starwars %>% 
       # keep most popular characters determined by film count
       mutate(film_count = unlist(lapply(films,length))) %>% 
@@ -22,10 +23,12 @@ shinyServer(function(input, output, clientData, session) {
       if(input$theme!="Upload Custom List"){
         
         dataset_list <- list(
-          "Wedding" = wedding_theme
-          , "Animal" = animal_theme
+          "Animal" = animal_theme
+          , "Baby" = baby_theme
           , "Star Wars" = starwars_theme
-          , "Numbers" = number_theme)
+          , "Wedding" = wedding_theme
+          , "Numbers" = number_theme
+          )
         
         bingo_df <- data.frame(
           dataset_list[[input$theme]])
@@ -129,13 +132,13 @@ shinyServer(function(input, output, clientData, session) {
     #            color="blue")
     # })
   
-  output$item_list_length <- renderText({
-    tdata <- ifelse(is.null(bingo_df()),0,nrow(bingo_df()))
-    paste("The total number of items sampled from:",tdata)
-    })
-  output$number_of_boards <- renderText({
-    paste("Bingo Boards:",input$boards)
-  })
+  # output$item_list_length <- renderText({
+  #   tdata <- ifelse(is.null(bingo_df()),0,nrow(bingo_df()))
+  #   paste("The total number of items sampled from:",tdata)
+  #   })
+  # output$number_of_boards <- renderText({
+  #   paste("Bingo Boards:",input$boards)
+  # })
   
  
     output$preview <- renderPlot(height = 500, {
