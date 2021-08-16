@@ -9,16 +9,6 @@ shinyServer(function(input, output, clientData, session) {
 
   # identify theme to use
   bingo_df <- reactive({
-      
-    wedding_theme <- read.csv("wedding.csv", stringsAsFactors = FALSE)
-    animal_theme <-  read.csv("animals.csv", stringsAsFactors = FALSE)
-    baby_theme <-  read.csv("baby.csv", stringsAsFactors = FALSE)
-    starwars_theme <- starwars %>% 
-      # keep most popular characters determined by film count
-      mutate(film_count = unlist(lapply(films,length))) %>% 
-      arrange(desc(film_count)) %>% 
-      slice(1:50) %>% distinct(name) %>% rename(tiles = name)
-    number_theme <- data.frame(tiles = 1:75)
     
       if(input$theme!="Upload Custom List"){
         

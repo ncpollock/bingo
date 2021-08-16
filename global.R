@@ -38,6 +38,16 @@ library(colourpicker)
 library(showtext) # use other fonts in ggplot2
 library(curl) # required for showtext?
 
+# load pre-includes themes
+wedding_theme <- read.csv("wedding.csv", stringsAsFactors = FALSE)
+animal_theme <-  read.csv("animals.csv", stringsAsFactors = FALSE)
+baby_theme <-  read.csv("baby.csv", stringsAsFactors = FALSE)
+starwars_theme <- starwars %>% 
+  # keep most popular characters determined by film count
+  mutate(film_count = unlist(lapply(films,length))) %>% 
+  arrange(desc(film_count)) %>% 
+  slice(1:50) %>% distinct(name) %>% rename(tiles = name)
+number_theme <- data.frame(tiles = 1:75)
 
 # create grids
 grid_df <- data.frame(
