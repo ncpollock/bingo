@@ -136,17 +136,16 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
         )
         , style="font-family: 'Roboto';"
         , tags$head(tags$style(custom_colors))
-        , actionButton('generate_pdf_preview',"Generate Actual PDF Preview"
-                       ,icon = icon("file-pdf-o"), class = "my_button", width = "100%")
-        , p("Note that this only generates two bingo boards to preview how the actual PDF download will look.")
-        , uiOutput("pdf_preview")
         , fluidRow(
           box(title = title_collapse("Quick Preview"), solidHeader = TRUE, width = 12, status = 'primary', collapsible = TRUE
               , p("Note that this preview version is fast, but it's distorted. Generate actual PDF
                   previews below when you have the formatting you want.")
               , plotOutput("preview", height = 500)
         ))
-
+        , actionButton('generate_pdf_preview',"Generate Actual PDF Preview"
+                       ,icon = icon("file-pdf-o"), class = "my_button", width = "100%")
+        , p("Note that this only generates two bingo boards to preview how the actual PDF download will look.")
+        , uiOutput("pdf_preview")
         ) # dashboardBody
 )
 )
