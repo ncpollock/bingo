@@ -21,7 +21,7 @@ ui <- tagList(tags$link(rel = "stylesheet", type = "text/css", href = "my_style.
           , menuItem("Select Your Content", icon = icon("search")
                      , startExpanded = TRUE
                      , selectInput('theme',"Choose a theme: ",
-                                   c(sort(c("Wedding","Animal","Star Wars","Numbers","Baby"))
+                                   c("Animal","Baby","Numbers","Star Wars","Wedding"
                                      ,"Upload Custom List"),
                                    selected = "Wedding")
                      , a(id="file_upload_placeholder")
